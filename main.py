@@ -1,4 +1,3 @@
-#Основной файл бота куда всё добавляется
 import disnake
 from disnake.ext import commands
 from disnake import Embed
@@ -71,10 +70,10 @@ async def kick_user(ctx: disnake.ApplicationCommandInteraction, user: disnake.Me
 @bot.slash_command(name='clear', description='Очистить чат')
 async def clear(ctx: disnake.ApplicationCommandInteraction, amount: int):
     if not ctx.author.guild_permissions.manage_messages:
-        await ctx.send('Не получилось кисунь 😳')
+        await ctx.send('Эта команда доступна только для администраторов.')
         return
     if amount > 1000:
-        await ctx.send('Кисуняя больше 1000 сообщений нельзя')
+        await ctx.send('Кискис нельзя удалить больше 1000 сообщений за раз.')
         return
     deleted = await ctx.channel.purge(limit=amount)
     
@@ -197,7 +196,7 @@ async def heads_or_tails(ctx: disnake.ApplicationCommandInteraction, bet: int, g
         c.execute('UPDATE economy SET balance = balance - ? WHERE user_id = ?', (bet, user_id))
         conn.commit()
         message = f"{ctx.author.mention}, Вы проиграли {bet} Poli-coins! Результат: {result}."
-        color = 0x9b59b6 
+        color = 0xe74c3c
     
     embed = disnake.Embed(color=color)
     embed.add_field(name="Орёл и решка", value=message, inline=False)
@@ -213,7 +212,7 @@ async def help(ctx):
         color=0x9b59b6
     )
     
-    commands_list = ["/kick", "/clear", "/ban", "/join", "/leave", "/help","/echo", "/daily", "/balance", "/game"]
+    commands_list = ["/kick", "/clear", "/ban", "/join", "/leave", "/help","/echo", "/daily", "/balance", "/game", "/stay"]
     descriptions_for_commands = [
         "Выгнать пользователя с сервера",
         "Очистить чат",
@@ -224,7 +223,8 @@ async def help(ctx):
         "Отправить сообщение от имени Полины",
         "Получить ежедневные Poli-coins",
         "Показать баланс",
-        "Играть в игры на Poli-coins"
+        "Играть в игры на Poli-coins",
+        "Оставить Полину в голосовом канале"
     ]
 
     for command_name, description_command in zip(commands_list, descriptions_for_commands):
@@ -239,25 +239,88 @@ async def help(ctx):
 
 
 
+
 @bot.slash_command(name='join', description='Зайти в голосовой канал')
+@commands.has_permissions(administrator=True)
 async def join(ctx: disnake.ApplicationCommandInteraction):
     if not ctx.author.voice:
-        await ctx.send('Ты должен находиться в голосовом канале для использования этой команды')
+        embed = disnake.Embed(
+            color=0xe21212,
+            title="Ошибка",
+            description="Ты должен находиться в голосовом канале для использования этой команды"
+        )
+        await ctx.send(embed=embed)
         return
+
+    channel = ctx.author.voice.channel
+    await channel.connect()
+    embed = disnake.Embed(
+        color=0x42f56c,
+        title="Готово",
+        description=f"Успешно подключилась к голосовому каналу {channel.name}"
+    )
+    await ctx.send(embed=embed)
+
     voice_channel = ctx.author.voice.channel
     await voice_channel.connect()
-    await ctx.send(f'Подключился к голосовому каналу "{voice_channel.name}".')
+    embed=disnake.Embed(color=0x9b59b6)
+    embed.add_field(name="voice", value=voice_channel.name, inline=False)
+    await ctx.send(f'Подключился к голосовому каналу "{voice_channel.name}".', embed=embed)
+
 
 
 
 @bot.slash_command(name='leave', description='Выйти из голосового канала')
+@commands.has_permissions(administrator=True)
 async def leave(ctx: disnake.ApplicationCommandInteraction):
     if not ctx.guild.voice_client:
-        await ctx.send('Я не нахожусь в голосовом канале')
+        embed = disnake.Embed(
+            color=0xe21212,
+            title="Ошибка",
+            description="Я не нахожусь в голосовом канале"
+        )
+        await ctx.send(embed=embed)
         return
 
     await ctx.guild.voice_client.disconnect()
-    await ctx.send('Отключилась от голосового канала')
+    embed = disnake.Embed(
+        color=0x42f56c,
+        title="Готово",
+        description="Успешно отключилась от голосового канала"
+    )
+    await ctx.send(embed=embed)
+
+
+
+
+@bot.slash_command(name='stay', description='Оставаться Полине в голосовом канале')
+@commands.has_permissions(administrator=True)
+async def stay(ctx: disnake.ApplicationCommandInteraction):
+    if not ctx.author.voice:
+        embed = disnake.Embed(
+            color=0xe21212,
+            title="Ошибка",
+            description="Вы должны находиться в голосовом канале, чтобы использовать эту команду."
+        )
+        await ctx.send(embed=embed)
+        return
+
+    vc = ctx.author.voice.channel
+    voice_client = ctx.guild.voice_client
+    if voice_client and voice_client.is_connected():
+        await voice_client.move_to(vc)
+    else:
+        voice_client = await vc.connect()
+
+    embed = disnake.Embed(
+        color=0x42f56c,
+        title="Готово",
+        description=f'Я останусь в голосовом канале "{vc.name}" до тех пор, пока меня не попросят выйти. Для этого напиши /leave.'
+    )
+    await ctx.send(embed=embed)
+
+
+
 
 
 bot.event
@@ -265,7 +328,7 @@ async def on_disconnect():
    conn.close()
 
 
+
 keep_alive.keep_alive()
 
 bot.run(os.environ.get('TOKEN'))
-
