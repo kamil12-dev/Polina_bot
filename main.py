@@ -1,11 +1,7 @@
 import disnake
 from disnake.ext import commands
-from disnake import Embed
-import asyncio
-import random
 import os
 import sqlite3
-from datetime import datetime, timedelta
 import keep_alive
 
 
