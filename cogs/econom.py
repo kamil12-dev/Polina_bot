@@ -28,13 +28,13 @@ class economy(commands.Cog):
         if not row:
             c.execute('INSERT INTO economy (user_id, username, balance, last_daily) VALUES (?, ?, 0, 0)', (user_id, username))
             conn.commit()
-            await ctx.send(f"{ctx.author.mention} Ваша карта создана! Используйте эту команду снова, чтобы получить свою ежедневную награду.")
+            await ctx.send(f"{ctx.author.mention} Ваша карта создана! Используйте эту команду снова, чтобы получить свою ежедневную награду.", ephemeral=True)
         else:
             balance, last_daily = row
             last_daily_date = datetime.fromtimestamp(last_daily)
 
             if last_daily_date.date() == datetime.utcnow().date():
-                await ctx.send(f"{ctx.author.mention} Вы уже получили Poli-coins сегодня! Попробуйте снова завтра.")
+                await ctx.send(f"{ctx.author.mention} Вы уже получили Poli-coins сегодня! Попробуйте снова завтра.", ephemeral=True)
             else:
                 new_balance = balance + random.randint(50, 150)
                 c.execute('UPDATE economy SET balance = ?, last_daily = ? WHERE user_id = ?', (new_balance, int(datetime.utcnow().timestamp()), user_id))
@@ -42,7 +42,7 @@ class economy(commands.Cog):
                 embed=disnake.Embed(color=0x9b59b6)
                 embed.add_field(name="Poli-coins", value="Ежедневный бонус", inline=False)
                 embed.add_field(name="Ты получил", value=f"{new_balance - balance} Poli-coins", inline=True)
-                await ctx.send(embed=embed)
+                await ctx.send(embed=embed, ephemeral=True)
 
 
 
@@ -57,12 +57,12 @@ class economy(commands.Cog):
             conn.commit()
             embed = disnake.Embed(color=0x9b59b6)
             embed.add_field(name="Ваш баланс", value="На вашем счету: 0", inline=True)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
         else:
             balance = row[0]
             embed = disnake.Embed(color=0x9b59b6)
             embed.add_field(name="Ваш баланс", value=f"На вашем счету: {balance}", inline=True)
-            await ctx.send(embed=embed) 
+            await ctx.send(embed=embed, ephemeral=True) 
 
 
 
@@ -73,11 +73,11 @@ class economy(commands.Cog):
         c.execute('SELECT balance FROM economy WHERE user_id = ?', (user_id,))
         row = c.fetchone()
         if not row:
-            await ctx.send("Вы не зарегистрированы в экономике. Используйте команду /daily для регистрации.")
+            await ctx.send("Вы не зарегистрированы в экономике. Используйте команду /daily для регистрации.", ephemeral=True)
             return
         balance = row[0]
         if balance < bet:
-            await ctx.send("У вас недостаточно Poli-coins для игры.")
+            await ctx.send("У вас недостаточно Poli-coins для игры.", ephemeral=True)
             return
 
         options = ["heads", "tails"]
@@ -97,7 +97,7 @@ class economy(commands.Cog):
 
         embed = disnake.Embed(color=color)
         embed.add_field(name="Орёл и решка", value=message, inline=False)
-        await ctx.send(embed=embed)      
+        await ctx.send(embed=embed, ephemeral=True)      
 
 
 

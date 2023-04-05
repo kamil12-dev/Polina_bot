@@ -1,7 +1,8 @@
 import disnake
 from disnake.ext import commands
 import sqlite3
-
+import os 
+import sys
 
 conn = sqlite3.connect('bans.db')
 c = conn.cursor()
@@ -19,7 +20,7 @@ class admins(commands.Cog):
         await user.kick(reason=reason)
         embed=disnake.Embed(color=0x9b59b6)
         embed.add_field(name="Kick", value=f"{ctx.author.mention} кикнула {user.mention} из {ctx.guild} сервера")
-        await ctx.send(embed=embed) 
+        await ctx.send(embed=embed, ephemeral=True) 
 
 
     @commands.slash_command(name='clear', description='Очистить чат')
@@ -33,7 +34,7 @@ class admins(commands.Cog):
         deleted = await ctx.channel.purge(limit=amount)
         embed=disnake.Embed(color=0x9b59b6)
         embed.add_field(name="Очистила чат", value=f"Удалила {len(deleted)} сообщений 😊", inline=False)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
 
     
@@ -49,7 +50,7 @@ class admins(commands.Cog):
             c.execute("INSERT INTO bans (user_id, username, reason) VALUES (?, ?, ?)", (user.id, user.name, reason))
             conn.commit()
             embed = disnake.Embed(title="Бан", description=f"{user.mention} Я забанила эту хамку.😤", color=0x9b59b6)    
-        await ctx.send(embed=embed) 
+        await ctx.send(embed=embed, ephemeral=True) 
 
 
     
@@ -79,7 +80,7 @@ class admins(commands.Cog):
         channel = ctx.author.voice.channel
         await channel.connect()
         embed = disnake.Embed(
-            color=0x42f56c,
+            color=0x9b59b6,
             title="Готово",
             description=f"Успешно подключилась к голосовому каналу {channel.name}"
         )
@@ -89,7 +90,7 @@ class admins(commands.Cog):
         await voice_channel.connect()
         embed=disnake.Embed(color=0x9b59b6)
         embed.add_field(name="voice", value=voice_channel.name, inline=False)
-        await ctx.send(f'Подключился к голосовому каналу "{voice_channel.name}".', embed=embed)
+        await ctx.send(f'Подключился к голосовому каналу "{voice_channel.name}".', embed=embed, ephemeral=True)
 
 
 
@@ -98,7 +99,7 @@ class admins(commands.Cog):
     async def leave(ctx: disnake.ApplicationCommandInteraction):
         if not ctx.guild.voice_client:
             embed = disnake.Embed(
-                color=0xe21212,
+                color=0x9b59b6,
                 title="Ошибка",
                 description="Я не нахожусь в голосовом канале"
             )
@@ -107,23 +108,23 @@ class admins(commands.Cog):
 
         await ctx.guild.voice_client.disconnect()
         embed = disnake.Embed(
-            color=0x42f56c,
+            color=0x9b59b6,
             title="Готово",
             description="Успешно отключилась от голосового канала"
         )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
 
     @commands.slash_command(name='stay', description='Оставаться Полине в голосовом канале')
     @commands.has_permissions(administrator=True)
-    async def stay(ctx: disnake.ApplicationCommandInteraction):
+    async def stay(ctx):
         if not ctx.author.voice:
             embed = disnake.Embed(
-                color=0xe21212,
+                color=0x9b59b6,
                 title="Ошибка",
                 description="Вы должны находиться в голосовом канале, чтобы использовать эту команду."
             )
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
             return
 
         vc = ctx.author.voice.channel
@@ -134,11 +135,26 @@ class admins(commands.Cog):
             voice_client = await vc.connect()
 
         embed = disnake.Embed(
-            color=0x42f56c,
+            color=0x9b59b6,
             title="Готово",
             description=f'Я останусь в голосовом канале "{vc.name}" до тех пор, пока меня не попросят выйти. Для этого напиши /leave.'
         )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+
+    @commands.slash_command(name='restart', description='Перезапустить бота')
+    @commands.has_permissions(administrator=True)
+    async def restart(ctx: disnake.ApplicationCommandInteraction):
+        await ctx.response.defer()
+
+        try:
+            os.execv(sys.executable, ['python'] + [arg for arg in sys.argv if arg != '--handle-sls'])
+        except Exception as e:
+            await ctx.send(ephemeral=True)
+            
+        
 
 
 
