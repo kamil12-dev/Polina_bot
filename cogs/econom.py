@@ -28,7 +28,7 @@ class economy(commands.Cog):
         if not row:
             c.execute('INSERT INTO economy (user_id, username, balance, last_daily) VALUES (?, ?, 0, 0)', (user_id, username))
             conn.commit()
-            await ctx.send(f"{ctx.author.mention} Ваша карта создана! Используйте эту команду снова, чтобы получить свою ежедневную награду.", ephemeral=True)
+            await ctx.send(f"{ctx.author.mention} Ваша счёт создан! Используйте эту команду снова, чтобы получить свою ежедневную награду.", ephemeral=True)
         else:
             balance, last_daily = row
             last_daily_date = datetime.fromtimestamp(last_daily)
@@ -39,7 +39,7 @@ class economy(commands.Cog):
                 new_balance = balance + random.randint(50, 150)
                 c.execute('UPDATE economy SET balance = ?, last_daily = ? WHERE user_id = ?', (new_balance, int(datetime.utcnow().timestamp()), user_id))
                 conn.commit()
-                embed=disnake.Embed(color=0x9b59b6)
+                embed=disnake.Embed(color=0x7788ff)
                 embed.add_field(name="Poli-coins", value="Ежедневный бонус", inline=False)
                 embed.add_field(name="Ты получил", value=f"{new_balance - balance} Poli-coins", inline=True)
                 await ctx.send(embed=embed, ephemeral=True)
@@ -55,12 +55,12 @@ class economy(commands.Cog):
         if not row:
             c.execute('INSERT INTO economy (user_id, username, balance, last_daily) VALUES (?, ?, 0, 0)', (user_id, ctx.author.name))
             conn.commit()
-            embed = disnake.Embed(color=0x9b59b6)
+            embed = disnake.Embed(color=0x7788ff)
             embed.add_field(name="Ваш баланс", value="На вашем счету: 0", inline=True)
             await ctx.send(embed=embed, ephemeral=True)
         else:
             balance = row[0]
-            embed = disnake.Embed(color=0x9b59b6)
+            embed = disnake.Embed(color=0x7788ff)
             embed.add_field(name="Ваш баланс", value=f"На вашем счету: {balance}", inline=True)
             await ctx.send(embed=embed, ephemeral=True) 
 
@@ -88,7 +88,7 @@ class economy(commands.Cog):
             c.execute('UPDATE economy SET balance = balance + ? WHERE user_id = ?', (winnings, user_id))
             conn.commit()
             message = f"{ctx.author.mention}, Вы выиграли {winnings} Poli-coins! Результат: {result}."
-            color = 0x9b59b6  
+            color = 0x7788ff  
         else:
             c.execute('UPDATE economy SET balance = balance - ? WHERE user_id = ?', (bet, user_id))
             conn.commit()
@@ -101,7 +101,41 @@ class economy(commands.Cog):
 
 
 
+    @commands.slash_command(name='dice', description='Игра в Dice')
+    async def dice(ctx, bet: int):
+        c.execute('SELECT balance FROM economy WHERE user_id=?', (ctx.author.id,))
+        row = c.fetchone()
+        if row is None:
+            balance = 0
+            c.execute('INSERT INTO economy VALUES (?, ?, ?, ?)', (ctx.author.id, ctx.author.name, balance, 0))
+        else:
+            balance = row[0]
+
+        if bet > balance:
+            await ctx.send('У вас недостаточно Poli-coins для ставки!')
+            return
+
+        roll = random.randint(1, 6)
+        if roll <= 3:
+            balance -= bet
+            message = f'Вы кинули {roll} и проиграли {bet} Poli-coins.'
+        else:
+            balance += bet
+            message = f'Вы кинули {roll} и выиграли {bet} Poli-coins!'
+
+        c.execute('UPDATE economy SET balance=? WHERE user_id=?', (balance, ctx.author.id))
+        conn.commit()
+
+        embed = disnake.Embed(title='Dice', description=message, color=disnake.Color.green() if roll > 3 else disnake.Color.red())
+        embed.add_field(name='Ваш баланс', value=f'{balance} Poli-coins', inline=False)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+
+
+
+
+
 def setup(bot: commands.Bot):
     bot.add_cog(economy(bot))
-
-   

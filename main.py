@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 import os
 import sqlite3
-import keep_alive
+#import keep_alive
 
 
 bot = commands.Bot(command_prefix='/', intents=disnake.Intents.all(), reload=True)
@@ -14,11 +14,12 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS bans
              (user_id INTEGER PRIMARY KEY, username TEXT, reason TEXT)''')
 
-
 c.execute('''CREATE TABLE IF NOT EXISTS economy
              (user_id INTEGER PRIMARY KEY, username TEXT, balance INTEGER, last_daily INTEGER)''')
 
+
 conn.commit()
+
 
 
 
@@ -45,6 +46,7 @@ async def on_disconnect():
 
 
 
-keep_alive.keep_alive()
 
-bot.run(os.environ.get('TOKEN'))
+
+bot.run("MTA3MzY0MzQyODI3MDgzMzcyNA.GYAFLN.tEMMgusXgYGU04WpiZ51jHHNfC3CSLyT7WsT4Q")
+

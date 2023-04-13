@@ -1,5 +1,7 @@
 import disnake
 from disnake.ext import commands
+import random
+import datetime
 
 
 
@@ -14,10 +16,10 @@ class user(commands.Cog):
     async def help(ctx):
         embed = disnake.Embed(
             title="Все мои команды Кисунь 😊",
-            color=0x9b59b6
+            color=0x7788ff
         )
         
-        commands_list = ["/kick", "/clear", "/ban", "/join", "/leave", "/help","/echo", "/daily", "/balance", "/game", "/stay", "/user_agreement", "/profile", "/restart", "/calculate"]
+        commands_list = ["/kick", "/clear", "/ban", "/join", "/leave", "/help","/echo", "/daily", "/balance", "/dice", "/stay", "/user_agreement", "/profile", "/restart", "/calculate", "/chill", "/create_role", "/assign_role", "/remove_role"]
         descriptions_for_commands = [
             "Выгнать пользователя с сервера(Adm)",
             "Очистить чат(Adm)",
@@ -28,12 +30,16 @@ class user(commands.Cog):
             "Отправить сообщение от имени Полины(Adm)",
             "Получить ежедневные Poli-coins",
             "Показать баланс",
-            "Играть в игры на Poli-coins",
+            "Играть в Dice",
             "Оставить Полину в голосовом канале(Adm)",
             "Пользовательское соглашение",
             "Узнать свою статистику",
             "Перезапуск бота(Adm)",
-            "Открыть калькулятор"
+            "Открыть калькулятор",
+            "Узнать длину своего члена",
+            "Создание новой роли(Adm)",
+            "Выдача роли пользователю(Adm)",
+            "Удаление роли у пользователя(Adm)",
         ]
     
         for command_name, description_command in zip(commands_list, descriptions_for_commands):
@@ -55,7 +61,7 @@ class user(commands.Cog):
         roles = member.roles 
         mention_roles = ', '.join([role.mention for role in roles]) 
         top_role = member.top_role.mention 
-        embed = disnake.Embed(title=f'User {member.name}', color=0x9b59b6)
+        embed = disnake.Embed(title=f'User {member.name}', color=0x7788ff)
         embed.set_thumbnail(url=member.avatar.url)
         embed.add_field(name='ID', value=member.id, inline=True)
         embed.add_field(name='Nickname', value=member.nick or member.name, inline=True)
@@ -100,7 +106,7 @@ class user(commands.Cog):
 💎Мы надеемся, что наш бот будет полезен вам. Если у вас есть вопросы или предложения по улучшению нашего бота, пожалуйста, свяжитесь с нами.💎
         '''
     
-        embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0x9b59b6)
+        embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0x7788ff)
         embed.add_field(name="Polina bot 2022-2023 © Все права защищены",value='',inline=False)
     
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -112,6 +118,36 @@ class user(commands.Cog):
             example_calc = example.replace("^", "**")
             example_text = example.replace("**", "^")
             await inter.response.send_message(embed=disnake.Embed(title='Калькулятор', description=f"{example_text} = {eval(example_calc)}", color=0x7788ff), ephemeral=True)
+
+
+
+
+    @commands.slash_command(name="chill", description="Узнать длину своего члена")
+    async def your_dick(ctx):
+        if disnake.utils.get(ctx.author.roles, name="Broadcaster"):
+            embed = disnake.Embed(description=f"@{ctx.author.display_name}, у тебя нет члена!", color=0x7788ff)
+            await ctx.response.send_message(embed=embed)
+        elif ctx.author.display_name.lower() == 'margot_tenebrae':
+            embed = disnake.Embed(description=f"@{ctx.author.display_name}, у тебя нет члена, но есть яйца!", color=0x7788ff)
+            await ctx.response.send_message(embed=embed)
+        else:
+            result1 = (
+                list(range(-3, 5)) + list(range(5, 10)) * 4 + list(range(10, 15)) * 6 + list(range(15, 20)) * 2 + list(range(20, 30))
+            )
+            height = random.choice(result1)
+            embed = disnake.Embed(description=f"@{ctx.author.display_name}, длина твоего члена - {height} см", color=0x7788ff)
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+
+        random.seed()
+
+
+
+
+
+
+
+
+
 
 
 
