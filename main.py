@@ -2,7 +2,7 @@ import disnake
 from disnake.ext import commands
 import os
 import sqlite3
-#import keep_alive
+import keep_alive
 
 
 bot = commands.Bot(command_prefix='/', intents=disnake.Intents.all(), reload=True)
@@ -49,6 +49,6 @@ async def on_disconnect():
 
 
 
+keep_alive.keep_alive()
 
-
-bot.run("MTA3MzY0MzQyODI3MDgzMzcyNA.GkCtvQ.lk6q2j4S2Iicn2J9oLnjXFVdXOD_PxSyWR0VMo")
+bot.run(os.environ.get('TOKEN'))
