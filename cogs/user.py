@@ -1,7 +1,10 @@
 import disnake
 from disnake.ext import commands
-import random
 import datetime
+from random import randint, random
+import aiohttp
+from asyncio import sleep
+
 
 
 
@@ -15,11 +18,31 @@ class user(commands.Cog):
     @commands.slash_command(name='help', description='Посмотреть все команды')
     async def help(ctx):
         embed = disnake.Embed(
-            title="Все мои команды Кисунь 😊",
+            title="Все мои команды 😊",
             color=0x7788ff
         )
-        
-        commands_list = ["/kick", "/clear", "/ban", "/join", "/leave", "/help","/echo", "/daily", "/balance", "/dice", "/stay", "/user_agreement", "/profile", "/restart", "/calculate", "/chill", "/create_role", "/assign_role", "/remove_role"]
+
+        commands_list = [
+            "/kick", 
+            "/clear", 
+            "/ban", 
+            "/join", 
+            "/leave", 
+            "/help",
+            "/echo", 
+            "/daily", 
+            "/balance", 
+            "/dice", 
+            "/stay", 
+            "/user_agreement", 
+            "/profile", 
+            "/restart", 
+            "/calculate", 
+            "/chill", 
+            "/create_role", 
+            "/assign_role", 
+            "/remove_role"
+        ]
         descriptions_for_commands = [
             "Выгнать пользователя с сервера(Adm)",
             "Очистить чат(Adm)",
@@ -39,17 +62,21 @@ class user(commands.Cog):
             "Узнать длину своего члена",
             "Создание новой роли(Adm)",
             "Выдача роли пользователю(Adm)",
-            "Удаление роли у пользователя(Adm)",
+            "Удаление роли у пользователя(Adm)"
         ]
-    
-        for command_name, description_command in zip(commands_list, descriptions_for_commands):
-            embed.add_field(
-                name=command_name,
-                value=description_command,
-                inline=False 
-            )
+
+        commands_description = "\n".join([f"`{command_name:<20}` {description_command}" for command_name, description_command in zip(commands_list, descriptions_for_commands)])
+
+        embed.add_field(
+            name="Команды:",
+            value=commands_description,
+            inline=False
+        )
+
+        embed.set_footer(text="Polina bot © 2023 Все права защищены")
 
         await ctx.send(embed=embed, ephemeral=True)
+
 
 
        
@@ -139,15 +166,6 @@ class user(commands.Cog):
             await ctx.response.send_message(embed=embed, ephemeral=True)
 
         random.seed()
-
-
-
-
-
-
-
-
-
 
 
 

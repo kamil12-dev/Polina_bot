@@ -7,6 +7,7 @@ from disnake.ext import commands
 class events(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.default_role_id = None 
 
 
 
@@ -46,7 +47,6 @@ class events(commands.Cog):
         emb = disnake.Embed(title="Привет кисунь😊 добро пожаловать на сервер...", color=0x7788ff)
         emb.add_field(name="Мои команды😊", value="Чтобы узнать подробнее команды напиши - /help")
         await member.send(embed=emb)
-
 
 
 def setup(bot: commands.Bot):
