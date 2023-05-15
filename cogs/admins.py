@@ -1,16 +1,33 @@
 import disnake
 from disnake.ext import commands
+from random import randint, random
+from disnake import Option
 import sqlite3
 import os 
 import sys
+import typing
+from datetime import datetime
 
 conn = sqlite3.connect('bans.db')
 c = conn.cursor()
+
+conn = sqlite3.connect('warn.db')
+c = conn.cursor()
+
+c.execute('''CREATE TABLE IF NOT EXISTS warnings
+             (user_id INTEGER PRIMARY KEY, num_warnings INTEGER)''')
+
+conn = sqlite3.connect('black-list-words.db')
+c = conn.cursor()
+
+c.execute("CREATE TABLE IF NOT EXISTS bad_words (word TEXT)")
+
 
 
 class admins(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        
 
              
      
@@ -53,6 +70,24 @@ class admins(commands.Cog):
         await ctx.send(embed=embed, ephemeral=True) 
 
 
+    @commands.slash_command(name="unban", description="Разбанить пользователя.")
+    @commands.has_permissions(ban_members=True, administrator=True)
+    async def unban_user(self, ctx: disnake.ApplicationCommandInteraction, user: disnake.User, reason: str = None):
+        banned_users = await ctx.guild.bans()
+        user_name, user_discriminator = user.name, user.discriminator
+        for banned_entry in banned_users:
+            banned_user = banned_entry.user
+            if (banned_user.name, banned_user.discriminator) == (user_name, user_discriminator):
+                await ctx.guild.unban(banned_user, reason=reason)
+                c.execute("DELETE FROM bans WHERE user_id=?", (banned_user.id,))
+                conn.commit()
+                embed = disnake.Embed(title="Разбан", description=f"{banned_user.mention} был успешно разбанен.", color=0x7788ff)
+                await ctx.send(embed=embed, ephemeral=True)
+                return
+        embed = disnake.Embed(title="Ошибка", description=f"Пользователь {user.mention} не был найден в списке забаненных.", color=0xff0000)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
     
     @commands.slash_command(name="message_bot", description="Отправить сообщение от имени Полины.")
     @commands.has_permissions(administrator=True)
@@ -74,7 +109,7 @@ class admins(commands.Cog):
                 title="Ошибка",
                 description="Ты должен находиться в голосовом канале для использования этой команды"
             )
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
             return
 
         channel = ctx.author.voice.channel
@@ -87,10 +122,11 @@ class admins(commands.Cog):
         await ctx.send(embed=embed)
 
         voice_channel = ctx.author.voice.channel
-        await voice_channel.connect()
-        embed=disnake.Embed(color=0x7788ff)
+        embed = disnake.Embed(color=0x7788ff)
         embed.add_field(name="voice", value=voice_channel.name, inline=False)
-        await ctx.send(f'Подключился к голосовому каналу "{voice_channel.name}".', embed=embed, ephemeral=True)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
 
 
 
@@ -103,7 +139,7 @@ class admins(commands.Cog):
                 title="Ошибка",
                 description="Я не нахожусь в голосовом канале"
             )
-            await ctx.send(embed=embed)
+            await ctx.response.send_message(embed=embed, ephemeral=True)
             return
 
         await ctx.guild.voice_client.disconnect()
@@ -112,7 +148,8 @@ class admins(commands.Cog):
             title="Готово",
             description="Успешно отключилась от голосового канала"
         )
-        await ctx.send(embed=embed, ephemeral=True)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
+
 
 
     @commands.slash_command(name='stay', description='Оставаться Полине в голосовом канале')
@@ -131,15 +168,21 @@ class admins(commands.Cog):
         voice_client = ctx.guild.voice_client
         if voice_client and voice_client.is_connected():
             await voice_client.move_to(vc)
+            embed = disnake.Embed(
+                color=0x7788ff,
+                title="Готово",
+                description=f'Я останусь в голосовом канале "{vc.name}" до тех пор, пока меня не попросят выйти. Для этого напиши /leave.'
+            )
         else:
             voice_client = await vc.connect()
+            embed = disnake.Embed(
+                color=0x7788ff,
+                title="Готово",
+                description="Удачно зашла в голосовой канал."
+            )
 
-        embed = disnake.Embed(
-            color=0x7788ff,
-            title="Готово",
-            description=f'Я останусь в голосовом канале "{vc.name}" до тех пор, пока меня не попросят выйти. Для этого напиши /leave.'
-        )
         await ctx.send(embed=embed, ephemeral=True)
+
 
 
 
@@ -152,7 +195,12 @@ class admins(commands.Cog):
         try:
             os.execv(sys.executable, ['python'] + [arg for arg in sys.argv if arg != '--handle-sls'])
         except Exception as e:
-            await ctx.senzzd(ephemeral=True)
+            embed = disnake.Embed(title='Ошибка при перезапуске бота', color=0x7788ff)
+            await ctx.send(embed=embed, ephemeral=True)
+        else:
+            embed = disnake.Embed(title='Бот перезапущен успешно', color=0x7788ff)
+            await ctx.send(embed=embed, ephemeral=True)
+
             
         
 
@@ -195,6 +243,164 @@ class admins(commands.Cog):
             color=0x7788ff
         )
         await ctx.send(embed=embed, ephemeral=True)
+
+
+
+    @commands.slash_command(name="setnick", description="Сменить никнейм участнику.")
+    @commands.has_permissions(administrator=True)
+    async def set_nickname(self, ctx, member: disnake.Member, new_nickname: str):
+        await member.edit(nick=new_nickname)
+        embed = disnake.Embed(
+            title="Изменение никнейма :pen_ballpoint:",
+            description=f"Никнейм участника {member.mention} был изменен на {new_nickname}.",
+            color=0x7788ff
+        )
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+    @commands.slash_command(name="warn", description="Выдать предупреждение пользователю")
+    @commands.has_permissions(administrator=True)
+    async def warn(self, ctx, user: disnake.Member, reason: str):
+        try:
+            embed = disnake.Embed(title="Пользователь был предупрежден!", color=0x7788ff)
+            embed.add_field(name="Участник", value=f"{user.mention}")
+            embed.add_field(name="Причина", value=f"`{reason}`")
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+
+            dm_channel = await user.create_dm()
+            embed = disnake.Embed(title="Вы получили предупреждение", color=0xff0f0f)
+            embed.add_field(name="Сервер", value=f"{ctx.guild.name}")
+            embed.add_field(name="Причина", value=f"`{reason}`")
+            await dm_channel.send(embed=embed)
+
+
+            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
+            row = c.fetchone()
+            if row:
+                num_warnings = row[1] + 1
+                c.execute("UPDATE warnings SET num_warnings=? WHERE user_id=?", (num_warnings, user.id))
+            else:
+                c.execute("INSERT INTO warnings VALUES (?, ?)", (user.id, 1))
+
+            conn.commit()
+
+            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
+            row = c.fetchone()
+            if row and row[1] >= 3:
+                kick_embed = disnake.Embed(title="Пользователь был исключен за многочисленные нарушения :x:", color=0x7788ff)
+                kick_embed.add_field(name="Участник", value=f"{user.mention}")
+                kick_embed.add_field(name="Причина", value=f"Получено `{row[1]}` предупреждений")
+                await ctx.response.send_message(embed=kick_embed, ephemeral=True)
+                await dm_channel.send(embed=kick_embed)
+                await dm_channel.send(f"Вы были исключены с сервера `{ctx.guild.name}` за многочисленные нарушения.")
+                await ctx.guild.kick(user, reason="Получено 3 предупреждения")
+
+        except disnake.errors.Forbidden:
+            await ctx.response.send_message("У меня нет прав, чтобы предупредить этого пользователя")
+
+
+
+
+    @commands.slash_command(name="unwarn", description="Снять предупреждение у пользователя")
+    @commands.has_permissions(administrator=True)
+    async def unwarn(self, ctx, user: disnake.Member):
+        c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
+        row = c.fetchone()
+        if row:
+            num_warnings = row[1] - 1
+            if num_warnings <= 0:
+                c.execute("DELETE FROM warnings WHERE user_id=?", (user.id,))
+            else:
+                c.execute("UPDATE warnings SET num_warnings=? WHERE user_id=?", (num_warnings, user.id))
+            conn.commit()
+            await ctx.response.send_message(embed=disnake.Embed(title="Предупреждение снято :white_check_mark:", color=0x7788ff).add_field(name="Участник", value=user.mention), ephemeral=True)
+        else:
+            await ctx.response.send_message(embed=disnake.Embed(title="У пользователя нет предупреждений :x:", color=0x7788ff).add_field(name="Участник", value=user.mention), ephemeral=True)
+
+
+
+    @commands.slash_command(name="warnings", description="Показать список предупреждений пользователя или сервера")
+    async def warnings(self, ctx, user: typing.Optional[disnake.Member] = None):
+        if user is None:
+            c.execute("SELECT * FROM warnings")
+            rows = c.fetchall()
+            if rows:
+                embed = disnake.Embed(title="Список предупреждений на сервере :warning:", color=0x7788ff)
+                for row in rows:
+                    user = ctx.guild.get_member(row[0])
+                    if user:
+                        embed.add_field(name=f"Участник: {user.display_name}", value=f"Предупреждений: {row[1]}", inline=False)
+            else:
+                embed = disnake.Embed(title="На сервере нет предупреждений :white_check_mark:", color=0x7788ff)
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+        else:
+            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
+            row = c.fetchone()
+            if row:
+                embed = disnake.Embed(title=f"Предупреждения для {user.display_name} :warning:", color=0x7788ff)
+                embed.add_field(name="Количество предупреждений", value=row[1])
+            else:
+                embed = disnake.Embed(title=f"У {user.display_name} нет предупреждений :white_check_mark:", color=0x7788ff)
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+
+
+
+
+    @commands.slash_command(name="setcolorrole", description="Изменить цвет роли")
+    @commands.has_permissions(administrator=True)
+    async def set_color_role(ctx, role: disnake.Role, color: str = None):
+        if color is not None:
+            try:
+                color = disnake.Color(int(color.lstrip('#'), 16))
+            except ValueError:
+                embed = disnake.Embed(title='Ошибка', description='Некорректный формат цвета. Цвет должен быть указан в HEX-формате (например, #ff0000)', color=0xff0000)
+                await ctx.send(embed=embed, ephemeral=True)
+                return
+        else:
+            color = disnake.Color.random()
+
+        await role.edit(color=color)
+
+        embed = disnake.Embed(title='Цвет изменен', color=0x7788ff)
+        embed.add_field(name='Роль', value=role.mention)
+        embed.add_field(name='Цвет', value=f'#{color.value:06x}')
+
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+    @commands.guild_only()
+    @commands.slash_command(
+        name="voting", 
+        description="Провести голосование",
+        options=[
+            disnake.Option("text", "Введите текст!", required=True)
+        ]
+    )
+    @commands.has_permissions(administrator=True)
+    async def poll(self, ctx, *, text):
+        await ctx.channel.purge(limit=1)
+        poll = disnake.Embed(description=text, colour=randint(0, 0x7788ff))
+        poll.timestamp = datetime.utcnow()
+        msg = await ctx.channel.send(embed=poll)
+        await msg.add_reaction("✔")
+        await msg.add_reaction("❌")
+
+
+
+    @commands.slash_command(name="send-dm", description="Отправить в лс сообщение от имени бота")
+    @commands.has_permissions(administrator=True)
+    @commands.guild_only()
+    async def send(self, ctx, member: disnake.Member, *, text):
+        embed = disnake.Embed(title="Обращение к вам!", color=disnake.Color.dark_red())
+        embed.add_field(name="Сообщение:", value=text)
+        embed.set_thumbnail(url=ctx.bot.user.display_avatar)
+        await member.send(embed=embed)
+
+        success_embed = disnake.Embed(title="Сообщение отправлено!",
+                                      description=f"Успешно отправил участнику {member.mention}",
+                                      color=0x7788ff)
+        await ctx.send(embed=success_embed, ephemeral=True)
 
 
 

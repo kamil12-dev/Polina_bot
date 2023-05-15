@@ -1,9 +1,12 @@
 import disnake
 from disnake.ext import commands
-import datetime
 from random import randint, random
-import aiohttp
 from asyncio import sleep
+import typing
+import requests
+import random
+from datetime import datetime
+
 
 
 
@@ -13,73 +16,60 @@ class user(commands.Cog):
         self.client = client
 
 
-
-
     @commands.slash_command(name='help', description='Посмотреть все команды')
     async def help(ctx):
+        adm_commands_list = [
+            ("/kick", "`Выгнать пользователя с сервера 😠` (Admin)"),
+            ("/clear", "`Очистить чат 💬` (Admin)"),
+            ("/ban", "`Забанить пользователя на сервере 🚫` (Admin)"),
+            ("/join", "`Зайти в голосовой канал 🎤` (Admin)"),
+            ("/leave", "`Выйти из голосового канала 🎙️` (Admin)"),
+            ("/echo", "`Отправить сообщение от имени Полины 📢` (Admin)"),
+            ("/stay", "`Оставить Полину в голосовом канале 🙏` (Admin)"),
+            ("/create_role", "`Создание новой роли 🛠️` (Admin)"),
+            ("/assign_role", "`Выдача роли пользователю 🤝` (Admin)"),
+            ("/restart", "`Перезапуск бота 🔄` (Admin)"),
+            ("/remove_role", "`Удаление роли у пользователя ❌` (Admin)") 
+        ]
+        normal_commands_list = [
+            ("/help", "`Посмотреть все команды 👀`"),
+            ("/daily", "`Получить ежедневные Poli-coins 💰`"),
+            ("/balance", "`Показать баланс 💵`"),
+            ("/dice", "`Играть в Dice 🎲`"),
+            ("/user_agreement", "`Пользовательское соглашение 📜`"),
+            ("/profile", "`Узнать свою статистику 📊`"),
+            ("/calculate", "`Открыть калькулятор 🧮`"),
+            ("/chill", "`Расслабиться и отдохнуть 😌`"),
+            ("/level", "`Узнать свой уровень 📈`")
+        ]
+
+        
         embed = disnake.Embed(
             title="Все мои команды 😊",
             color=0x7788ff
         )
-
-        commands_list = [
-            "/kick", 
-            "/clear", 
-            "/ban", 
-            "/join", 
-            "/leave", 
-            "/help",
-            "/echo", 
-            "/daily", 
-            "/balance", 
-            "/dice", 
-            "/stay", 
-            "/user_agreement", 
-            "/profile", 
-            "/restart", 
-            "/calculate", 
-            "/chill", 
-            "/create_role", 
-            "/assign_role", 
-            "/remove_role"
-        ]
-        descriptions_for_commands = [
-            "Выгнать пользователя с сервера(Adm)",
-            "Очистить чат(Adm)",
-            "Забанить пользователя на сервере(Adm)",
-            "Зайти в голосовой канал(Adm)",
-            "Выйти в голосовой канал(Adm)",
-            "Посмотреть все команды",
-            "Отправить сообщение от имени Полины(Adm)",
-            "Получить ежедневные Poli-coins",
-            "Показать баланс",
-            "Играть в Dice",
-            "Оставить Полину в голосовом канале(Adm)",
-            "Пользовательское соглашение",
-            "Узнать свою статистику",
-            "Перезапуск бота(Adm)",
-            "Открыть калькулятор",
-            "Узнать длину своего члена",
-            "Создание новой роли(Adm)",
-            "Выдача роли пользователю(Adm)",
-            "Удаление роли у пользователя(Adm)"
-        ]
-
-        commands_description = "\n".join([f"`{command_name:<20}` {description_command}" for command_name, description_command in zip(commands_list, descriptions_for_commands)])
-
-        embed.add_field(
-            name="Команды:",
-            value=commands_description,
-            inline=False
-        )
-
         embed.set_footer(text="Polina bot © 2023 Все права защищены")
+
+        
+        admin_commands_field = ""
+        for command_tuple in adm_commands_list:
+            command_name, description = command_tuple
+            admin_commands_field += f"`{command_name: <20}` {description}\n"
+
+        normal_commands_field = ""
+        for command_tuple in normal_commands_list:
+            command_name, description = command_tuple
+            normal_commands_field += f"`{command_name: <20}` {description}\n"
+
+        if admin_commands_field:
+            embed.add_field(name="Команды для администраторов", value=admin_commands_field, inline=False)
+        if normal_commands_field:
+            embed.add_field(name="Обычные команды", value=normal_commands_field, inline=False)
 
         await ctx.send(embed=embed, ephemeral=True)
 
 
 
-       
 
     @commands.slash_command(name='profile', description='Узнать свою статистику')
     async def profile(ctx, member:disnake.Member):
@@ -97,7 +87,7 @@ class user(commands.Cog):
         embed.add_field(name='Roles', value=mention_roles, inline=True)
         embed.add_field(name='Top role', value=top_role, inline=True)
         embed.add_field(name='Bot', value=member.bot, inline=True)
-        embed.set_footer(text='Polina bot | ©', icon_url=ctx.author.avatar.url) 
+        embed.set_footer(text='Polina bot | © 2023', icon_url=ctx.author.avatar.url) 
         await ctx.send(embed=embed, ephemeral=True) 
 
 
@@ -134,7 +124,7 @@ class user(commands.Cog):
         '''
     
         embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0x7788ff)
-        embed.add_field(name="Polina bot 2022-2023 © Все права защищены",value='',inline=False)
+        embed.add_field(name="Polina bot 2023 © Все права защищены",value='',inline=False)
     
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
@@ -151,23 +141,88 @@ class user(commands.Cog):
 
     @commands.slash_command(name="chill", description="Узнать длину своего члена")
     async def your_dick(ctx):
-        if disnake.utils.get(ctx.author.roles, name="Broadcaster"):
-            embed = disnake.Embed(description=f"@{ctx.author.display_name}, у тебя нет члена!", color=0x7788ff)
-            await ctx.response.send_message(embed=embed)
-        elif ctx.author.display_name.lower() == 'margot_tenebrae':
-            embed = disnake.Embed(description=f"@{ctx.author.display_name}, у тебя нет члена, но есть яйца!", color=0x7788ff)
-            await ctx.response.send_message(embed=embed)
-        else:
-            result1 = (
-                list(range(-3, 5)) + list(range(5, 10)) * 4 + list(range(10, 15)) * 6 + list(range(15, 20)) * 2 + list(range(20, 30))
-            )
-            height = random.choice(result1)
-            embed = disnake.Embed(description=f"@{ctx.author.display_name}, длина твоего члена - {height} см", color=0x7788ff)
-            await ctx.response.send_message(embed=embed, ephemeral=True)
-
+        result1 = (
+            list(range(-3, 5)) + list(range(5, 10)) * 4 + list(range(10, 15)) * 6 + list(range(15, 20)) * 2 + list(range(20, 30))
+        )
+        height = random.choice(result1)
+        embed = disnake.Embed(description=f"@{ctx.author.display_name}, длина твоего члена - {height} см", color=0x7788ff)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
         random.seed()
 
 
+    @commands.slash_command(name="avatar", description="Посмотреть аватар пользователя")
+    async def avatar(self, ctx, user: typing.Optional[disnake.Member] = None):
+        if not user:
+            user = ctx.author
+        avatar_url = user.avatar.url
+        embed = disnake.Embed(title=f"Аватар {user.display_name} :frame_photo:", color=0x7788ff)
+        embed.set_image(url=avatar_url)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+    @commands.slash_command(name="server", description="Просмотр информации о сервере")
+    async def server_info(self, ctx):
+        guild = ctx.guild
+        joined_at = guild.me.joined_at.strftime("%d.%m.%Y %H:%M:%S")
+        mention_roles = ', '.join([role.mention for role in guild.roles])
+        top_role = guild.roles[-1].mention
+
+        embed = disnake.Embed(title=f"Информация о сервере {guild.name} :desktop:", color=0x7788ff)
+        embed.set_thumbnail(url=guild.icon.url)
+        embed.add_field(name="ID :id:", value=guild.id, inline=True)
+        embed.add_field(name="Создан :date:", value=guild.created_at.strftime("%d.%m.%Y %H:%M:%S"), inline=True)
+        embed.add_field(name="Владелец :crown:", value=guild.owner.display_name, inline=True)
+        embed.add_field(name='Присоединился', value=joined_at, inline=True)
+        embed.add_field(name="Участники :busts_in_silhouette:", value=str(guild.member_count), inline=True)
+        embed.add_field(name='Топ роли', value=top_role, inline=True)
+        embed.add_field(name="Каналы :loudspeaker:", value=f"Текстовые: {len(guild.text_channels)}\n"
+                                                          f"Голосовые: {len(guild.voice_channels)}", inline=True)
+        embed.add_field(name='Роли', value=mention_roles, inline=True)
+        
+        embed.set_footer(text='Polina bot | ©2023', icon_url=ctx.author.avatar.url) 
+
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+    @commands.slash_command(name="short", description="Сократить URL-адрес")
+    async def shorten_url(ctx: disnake.ApplicationCommandInteraction, url: str):
+        response = requests.get(f"https://tinyurl.com/api-create.php?url={url}")
+        embed = disnake.Embed(title="Сокращенный URL-адрес",
+                              description=f"Ваш сокращенный URL-адрес: {response.text}",
+                              color=0x7788ff)
+        embed.set_footer(text='Polina bot | ©2023', icon_url=ctx.author.avatar.url)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
+
+
+    
+
+    @commands.slash_command(name="ping", description="Проверка бота на работу")
+    async def botinfo(ctx):
+        bot = ctx.bot
+
+        uptime = datetime.utcnow() - bot.user.created_at.replace(tzinfo=None)
+        uptime_str = f"{uptime.days} дней {uptime.seconds // 3600} часа {(uptime.seconds // 60) % 60} минуты {uptime.seconds % 60} секунды"
+
+        embed = disnake.Embed(title="Pong! :ping_pong:", color=0x7788ff)
+        embed.add_field(name="Работаю 🕒", value=uptime_str + "\n", inline=False)
+        embed.add_field(name="Задержка 🚀", value=f"{round(bot.latency * 1000)} мс\n", inline=False)
+        embed.add_field(name="Задержка хостинга 🌐", value=f"{round(bot.ws.latency * 1000)} мс\n", inline=False)
+
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+
+    @commands.slash_command(name="nitro", description="Генерирует Discord Nitro")
+    async def generate_nitro_link(self, ctx):
+
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        
+        link = ''.join(random.choices(alphabet, k=16))
+        embed = disnake.Embed(title="Discord Nitro", description=f"https://discord.gift/{link}", color=0x7788ff)
+        await ctx.send(embed=embed, ephemeral=True)
+        
 
 def setup(bot: commands.Bot):
     bot.add_cog(user(bot))
