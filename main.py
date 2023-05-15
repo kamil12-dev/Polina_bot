@@ -51,4 +51,4 @@ async def on_disconnect():
 
 
 
-bot.run("MTA3MzY0MzQyODI3MDgzMzcyNA.GIkgfG.j1UXVGbW7lvIn5cqy9Gi3wo_HMex34VjDspuek")
+bot.run()
