@@ -4,7 +4,7 @@ from disnake import OptionType, Embed
 
 import openai
 
-openai.api_key = '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'
+openai.api_key = ''
 
 class chat(commands.Cog):
     def __init__(self, bot):
