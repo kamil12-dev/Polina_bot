@@ -31,7 +31,7 @@ class level(commands.Cog):
             level += 1
             xp = 0
             embed = disnake.Embed(color=0x7788ff)
-            embed.description = f"{message.author.mention} повысил уровень до {level} :smiley:!"
+            embed.description = f"{message.author.mention} повысил уровень до {level}!"
             await message.channel.send(embed=embed)
             c.execute("UPDATE levels SET level=?, xp=? WHERE user_id=?", (level, xp, author_id))
             conn.commit()
