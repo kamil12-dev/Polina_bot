@@ -51,7 +51,7 @@ class AutoRole(commands.Cog):
                 description="Укажите корректную роль",
                 color=0x7788ff
             )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
 
     @set_default_role.error
     async def set_default_role_error(self, ctx, error):
@@ -61,7 +61,7 @@ class AutoRole(commands.Cog):
                 description="У вас нет разрешения управлять ролями!",
                 color=0x7788ff
             )
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
 
 
 def setup(bot):

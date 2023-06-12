@@ -4,7 +4,7 @@ from disnake import OptionType, Embed
 
 import openai
 
-openai.api_key = ''
+openai.api_key = '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'
 
 class chat(commands.Cog):
     def __init__(self, bot):
@@ -44,7 +44,8 @@ class chat(commands.Cog):
         else:
             embed = Embed(title="ChatGPT", description=f"{full_response[:2000]}...\n\n[Описание обрезано из-за ограничения Discord на 2000 символов.]", color=0x7788ff)
 
-        await inter.followup.send(embed=embed, ephemeral=True)
+        if not inter.responded:
+            await inter.send(embed=embed, ephemeral=True)
 
 
 def setup(bot):

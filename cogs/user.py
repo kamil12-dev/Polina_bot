@@ -9,95 +9,9 @@ from datetime import datetime
 
 
 
-
-
-
 class user(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
-
-
-    @commands.slash_command(name='help', description='Посмотреть все команды')
-    async def help(ctx):
-        adm_commands_list = [
-            ("/kick", "`Выгнать пользователя с сервера 😠` (Admin)"),
-            ("/clear", "`Очистить чат 💬` (Admin)"),
-            ("/ban", "`Забанить пользователя на сервере 🚫` (Admin)"),
-            ("/join", "`Зайти в голосовой канал 🎤` (Admin)"),
-            ("/leave", "`Выйти из голосового канала 🎙️` (Admin)"),
-            ("/echo", "`Отправить сообщение от имени Полины 📢` (Admin)"),
-            ("/stay", "`Оставить Полину в голосовом канале 🙏` (Admin)"),
-            ("/create_role", "`Создание новой роли 🛠️` (Admin)"),
-            ("/assign_role", "`Выдача роли пользователю 🤝` (Admin)"),
-            ("/setroleap", "`Установить роль для Автовыдачи 👥` (Admin)"),
-            ("/remove_role", "`Удаление роли у пользователя ❌` (Admin)"),
-            ("/warns", "`Выдать предупреждение пользователю ⚠️` (Admin)"),
-            ("/unwarn", "`Снять предупреждение у пользователя 💚` (Admin)"),
-            ("/setcolorrole", "`Изменить цвет роли 🌈` (Admin)"),
-            ("/voting", "`Провести голосование 🗳️` (Admin)"),
-            ("/send-dm", "`Отправить в лс сообщение от имени бота 💬` (Admin)"),
-        ]
-
-        normal_commands_list = [
-            ("/help", "`Посмотреть все команды 👀`"),
-            ("/daily", "`Получить ежедневные Poli-coins 💰`"),
-            ("/balance", "`Показать баланс 💵`"),
-            ("/dice", "`Играть в Dice 🎲`"),
-            ("/user_agreement", "`Пользовательское соглашение 📜`"),
-            ("/profile", "`Узнать свою статистику 📊`"),
-            ("/calculate", "`Открыть калькулятор 🧮`"),
-            ("/chill", "`Расслабиться и отдохнуть 😌`"),
-            ("/level", "`Узнать свой уровень 📈`"),
-            ("/warnings", "`Показать список предупреждений ⚠️`"),
-            ("/avatar", "`Посмотреть аватар пользователя 👤`"),
-            ("/short", "`Сократить URL-адрес 🔗`"),
-            ("/server", "`Просмотр информации о сервере 🖥️`"),
-            ("/ping", "`Проверка бота на работу 🏓`"),
-            ("/nitro", "`Генерирует Discord Nitro 🎁`"),
-            ("/chat", "`Спросить у ChatGPT 🤔`")
-        ]
-
-        nsfw_commands_list = [
-            ("/waifu", "`18+ картинки / GIF` 🍑"),
-            ("/blowjob", "`18+ картинки / GIF` 🍆"),
-            ("/trap", "`18+ картинки / GIF` 🚻"),
-            ("/neko", "`18+ картинки / GIF` 😺"),
-            ("/sex", "`18+ картинки / GIF` 🍌"),
-            ("/solo", "`18+ картинки / GIF` 👄"),
-        ]
-
-        embed = disnake.Embed(
-            title="Все мои команды 😊",
-            color=0x7788ff
-        )
-        embed.set_footer(text="Polina bot © 2023 Все права защищены 🖋️")
-
-        admin_commands_field = ""
-        for command_tuple in adm_commands_list:
-            command_name, description = command_tuple
-            admin_commands_field += f"`{command_name: <20}` {description}\n"
-
-        normal_commands_field = ""
-        for command_tuple in normal_commands_list:
-            command_name, description = command_tuple
-            normal_commands_field += f"`{command_name: <20}` {description}\n"
-
-        nsfw_commands_field = ""
-        for command_tuple in nsfw_commands_list:
-            command_name, description = command_tuple
-            nsfw_commands_field += f"`{command_name: <20}` {description}\n"
-
-        if admin_commands_field:
-            embed.add_field(name="Команды для администраторов 👑", value=admin_commands_field, inline=False)
-        if normal_commands_field:
-            embed.add_field(name="Обычные команды 🧑‍💻", value=normal_commands_field, inline=False)
-        if nsfw_commands_field:
-            embed.add_field(name="NSFW 18+ команды 🔞", value=nsfw_commands_field, inline=False)
-
-        await ctx.send(embed=embed, ephemeral=True)
-
-
-
 
 
 

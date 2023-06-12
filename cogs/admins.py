@@ -8,6 +8,7 @@ import sys
 import typing
 from datetime import datetime
 
+
 conn = sqlite3.connect('bans.db')
 c = conn.cursor()
 
@@ -423,8 +424,6 @@ class admins(commands.Cog):
                                       description=f"Успешно отправил участнику {member.mention}",
                                       color=0x7788ff)
         await ctx.send(embed=success_embed, ephemeral=True)
-
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(admins(bot))

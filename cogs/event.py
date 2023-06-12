@@ -9,10 +9,18 @@ class events(commands.Cog):
 
 
 
+    #@commands.Cog.listener()
+    #async def on_ready(self):
+    #    await self.bot.change_presence(status=disnake.Status.idle, activity=disnake.Activity(type=disnake.ActivityType.listening, name="Apple Music"))
+
+
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.bot.change_presence(status=disnake.Status.idle, activity=disnake.Activity(type=disnake.ActivityType.listening, name="Apple Music"))
-
+        members = sum(guild.member_count - 1 for guild in self.bot.guilds)
+        await self.bot.change_presence(activity=disnake.Activity(
+            type=disnake.ActivityType.watching,
+            name=f'{members} участников'
+        ))
 
 
     @commands.Cog.listener()
