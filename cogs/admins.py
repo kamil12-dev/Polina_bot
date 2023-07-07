@@ -59,6 +59,8 @@ class admins(commands.Cog):
     @commands.slash_command(name="ban", description="Забанить пользователя.")
     @commands.has_permissions(ban_members=True, administrator=True)
     async def ban_user(self, ctx: disnake.ApplicationCommandInteraction, user: disnake.Member, reason: str = None):
+        conn = sqlite3.connect('bans.db')
+        c = conn.cursor()
         c.execute("SELECT user_id FROM bans WHERE user_id=?", (user.id,))
         banned_user = c.fetchone()  
         if banned_user:
@@ -258,116 +260,6 @@ class admins(commands.Cog):
             color=0x7788ff
         )
         await ctx.send(embed=embed, ephemeral=True)
-
-
-
-
-    @commands.slash_command(name="warn", description="Выдать предупреждение пользователю")
-    @commands.has_permissions(administrator=True)
-    async def warn(self, ctx, user: disnake.Member, reason: str):
-        conn = sqlite3.connect('warn.db')
-        c = conn.cursor()
-        c.execute("CREATE TABLE IF NOT EXISTS bad_words (word TEXT)")
-        c.execute('''CREATE TABLE IF NOT EXISTS warnings (user_id INTEGER PRIMARY KEY, num_warnings INTEGER)''')
-        try:
-            embed = disnake.Embed(title="Пользователь был предупрежден!", color=0x7788ff)
-            embed.add_field(name="Участник", value=f"{user.mention}")
-            embed.add_field(name="Причина", value=f"`{reason}`")
-            await ctx.response.send_message(embed=embed, ephemeral=True)
-            dm_channel = await user.create_dm()
-            embed = disnake.Embed(title="Вы получили предупреждение", color=0xff0f0f)
-            embed.add_field(name="Сервер", value=f"{ctx.guild.name}")
-            embed.add_field(name="Причина", value=f"`{reason}`")
-            await dm_channel.send(embed=embed)
-            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
-            row = c.fetchone()
-            if row:
-                num_warnings = row[1] + 1
-                c.execute("UPDATE warnings SET num_warnings=? WHERE user_id=?", (num_warnings, user.id))
-            else:
-                c.execute("INSERT INTO warnings VALUES (?, ?)", (user.id, 1))
-            conn.commit()
-            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
-            row = c.fetchone()
-            if row and row[1] >= 3:
-                kick_embed = disnake.Embed(title="Пользователь был исключен за многочисленные нарушения :x:", color=0x7788ff)
-                kick_embed.add_field(name="Участник", value=f"{user.mention}")
-                kick_embed.add_field(name="Причина", value=f"Получено `{row[1]}` предупреждений")
-                await ctx.response.send_message(embed=kick_embed, ephemeral=True)
-                await dm_channel.send(embed=kick_embed)
-                await dm_channel.send(f"Вы были исключены с сервера `{ctx.guild.name}` за многочисленные нарушения.")
-                await user.kick(reason="Получено 3 предупреждения")
-        except disnake.errors.Forbidden:
-            await ctx.response.send_message("У меня нет прав, чтобы предупредить этого пользователя", ephemeral=True)
-    
-    
-
-
-
-    @commands.slash_command(name="unwarn", description="Снять предупреждение у пользователя")
-    @commands.has_permissions(administrator=True)
-    async def unwarn(ctx, user: disnake.Member):
-        conn = sqlite3.connect('warn.db')
-        c = conn.cursor()
-        conn = sqlite3.connect('black-list-words.db')
-        c = conn.cursor()
-
-        c.execute("CREATE TABLE IF NOT EXISTS bad_words (word TEXT)")
-
-        c.execute('''CREATE TABLE IF NOT EXISTS warnings
-                 (user_id INTEGER PRIMARY KEY, num_warnings INTEGER)''')
-        c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
-        row = c.fetchone()
-        if row:
-            num_warnings = row[1] - 1
-            if num_warnings <= 0:
-                c.execute("DELETE FROM warnings WHERE user_id=?", (user.id,))
-            else:
-                c.execute("UPDATE warnings SET num_warnings=? WHERE user_id=?", (num_warnings, user.id))
-            conn.commit()
-            await ctx.response.send_message(embed=disnake.Embed(title="Предупреждение снято :white_check_mark:", color=0x7788ff).add_field(name="Участник", value=user.mention), ephemeral=True)
-        else:
-            await ctx.response.send_message(embed=disnake.Embed(title="У пользователя нет предупреждений :x:", color=0x7788ff).add_field(name="Участник", value=user.mention), ephemeral=True)
-    
-    conn = sqlite3.connect('warn.db')
-    c = conn.cursor()
-    
-
-    c.execute('''CREATE TABLE IF NOT EXISTS warnings (user_id INTEGER PRIMARY KEY, num_warnings INTEGER)''')
-
-    @commands.slash_command(name="warnings", description="Показать список предупреждений")
-    async def warnings(self, ctx, user: typing.Optional[disnake.Member] = None):
-        conn = sqlite3.connect('warn.db')
-        c = conn.cursor()
-
-        c.execute('''CREATE TABLE IF NOT EXISTS warnings
-                 (user_id INTEGER PRIMARY KEY, num_warnings INTEGER)''')
-        c = conn.cursor()
-        
-        c.execute("CREATE TABLE IF NOT EXISTS bad_words (word TEXT)")
-        if user is None:
-            c.execute("SELECT * FROM warnings")
-            rows = c.fetchall()
-            if rows:
-                embed = disnake.Embed(title="Список предупреждений на сервере :warning:", color=0x7788ff)
-                for row in rows:
-                    user = ctx.guild.get_member(row[0])
-                    if user:
-                        embed.add_field(name=f"Участник: {user.display_name}", value=f"Предупреждений: {row[1]}", inline=False)
-            else:
-                embed = disnake.Embed(title="На сервере нет предупреждений :white_check_mark:", color=0x7788ff)
-            await ctx.response.send_message(embed=embed, ephemeral=True)
-        else:
-            c.execute("SELECT * FROM warnings WHERE user_id=?", (user.id,))
-            row = c.fetchone()
-            if row:
-                embed = disnake.Embed(title=f"Предупреждения для {user.display_name} :warning:", color=0x7788ff)
-                embed.add_field(name="Количество предупреждений", value=row[1])
-            else:
-                embed = disnake.Embed(title=f"У {user.display_name} нет предупреждений :white_check_mark:", color=0x7788ff)
-            await ctx.response.send_message(embed=embed, ephemeral=True)
-
-
 
 
     @commands.slash_command(name="setcolorrole", description="Изменить цвет роли")

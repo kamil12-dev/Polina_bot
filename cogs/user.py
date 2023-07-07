@@ -156,8 +156,6 @@ class user(commands.Cog):
         await ctx.send(embed=embed, ephemeral=True)
 
 
-
-
     @commands.slash_command(name="nitro", description="Генерирует Discord Nitro")
     async def generate_nitro_link(self, ctx):
 
@@ -167,7 +165,6 @@ class user(commands.Cog):
         embed = disnake.Embed(title="Discord Nitro", description=f"https://discord.gift/{link}", color=0x7788ff)
         await ctx.send(embed=embed, ephemeral=True)
         
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(user(bot))
