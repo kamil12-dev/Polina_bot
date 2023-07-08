@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 
 
+
 class events(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -14,20 +15,13 @@ class events(commands.Cog):
         await self.bot.change_presence(status=disnake.Status.idle, activity=disnake.Activity(type=disnake.ActivityType.listening, name="Yandex Music"))
 
 
-    #@commands.Cog.listener()
-    #async def on_ready(self):
-    #    members = sum(guild.member_count - 1 for guild in self.bot.guilds)
-    #    await self.bot.change_presence(activity=disnake.Activity(
-    #        type=disnake.ActivityType.watching,
-    #        name=f'{members} участников'
-    #    ))
 
     @commands.Cog.listener()
     async def on_message(self, message):
         await self.bot.process_commands(message)
 
         msg = message.content.lower()
-        censored_words = ["кефир", "чифирный", "мать", "шлюха", "кефирчик", "бахмуте", "украина", "кефир выпил"]
+        censored_words = ["кефир", "чифирный", "мать", "шлюха", "кефирчик", "бахмуте", "украина", "кефир выпил", "Кефирчика", "кефирчиком", "маму"]
 
         for bad_content in msg.split():
             if bad_content in censored_words:
@@ -39,7 +33,6 @@ class events(commands.Cog):
                 )
                 await message.channel.send(embed=embed)
                 break
-
 
 
 
