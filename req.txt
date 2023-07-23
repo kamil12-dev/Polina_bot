@@ -1,0 +1,7 @@
+python-decouple
+disnake
+sqlite3
+typing
+DateTime
+asyncio
+aiohttp
