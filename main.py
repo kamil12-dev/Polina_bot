@@ -2,8 +2,9 @@ import disnake
 from disnake.ext import commands
 import os
 import sqlite3
-#import keep_alive
+from decouple import config
 
+BOT_TOKEN = config('BOT_TOKEN')
 
 bot = commands.Bot(command_prefix='/', intents=disnake.Intents.all(), reload=True)
 
@@ -51,4 +52,4 @@ async def on_disconnect():
 
 
 
-bot.run()
+bot.run(BOT_TOKEN)
