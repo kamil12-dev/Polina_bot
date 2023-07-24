@@ -2,6 +2,7 @@ python-decouple
 disnake
 sqlite3
 typing
+requests
 DateTime
 asyncio
 aiohttp

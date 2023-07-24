@@ -37,7 +37,7 @@ class mute(commands.Cog):
         self.cursor.execute('INSERT OR REPLACE INTO mutes VALUES (?, ?)', (member.id, unmute_time))
         self.conn.commit()
 
-        embed = disnake.Embed(title="Мут", color=0x7788ff)
+        embed = disnake.Embed(title="Мут", color=0xCD853F)
         embed.add_field(name="Пользователь", value=member.mention, inline=True)
         embed.add_field(name="Длительность", value=f"{duration} минут", inline=True)
         embed.add_field(name="Причина", value=reason, inline=True)
@@ -59,7 +59,7 @@ class mute(commands.Cog):
             await member.remove_roles(mute_role)
             await self.unmute_member(member)
 
-            embed = disnake.Embed(title="Размут", color=0x7788ff)
+            embed = disnake.Embed(title="Размут", color=0xCD853F)
             embed.add_field(name="Пользователь", value=member.mention, inline=True)
             embed.set_footer(text="Был размучен 🎉")
             embed.set_footer(text="Polina bot © 2023 Все права защищены")
@@ -97,7 +97,7 @@ class mute(commands.Cog):
     async def send_mute_dm(self, member, guild_name, reason, duration, admin):
         try:
             dm_channel = await member.create_dm()
-            embed = disnake.Embed(title="Вы получили Mute", color=0x7788ff)
+            embed = disnake.Embed(title="Вы получили Mute", color=0xCD853F)
             embed.add_field(name="Сервер", value=guild_name, inline=True)
             embed.add_field(name="Причина", value=reason, inline=True)
             unmute_datetime = datetime.datetime.now() + datetime.timedelta(minutes=duration)
@@ -112,7 +112,7 @@ class mute(commands.Cog):
     async def send_unmute_dm(self, member):
         try:
             dm_channel = await member.create_dm()
-            embed = disnake.Embed(title="Вы размучены 🎉", color=0x7788ff)
+            embed = disnake.Embed(title="Вы размучены 🎉", color=0xCD853F)
             embed.add_field(name="Сервер", value=member.guild.name, inline=True)
             embed.set_footer(text="Вы размучены 🎉")
             embed.set_footer(text="Polina bot © 2023 Все права защищены")
@@ -135,11 +135,6 @@ class mute(commands.Cog):
                     await member.remove_roles(mute_role)
                     self.cursor.execute('DELETE FROM mutes WHERE user_id = ?', (member.id,))
                     self.conn.commit()
-
-
-
-
-
 
 def setup(bot):
     bot.add_cog(mute(bot))

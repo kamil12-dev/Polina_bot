@@ -22,7 +22,7 @@ class user(commands.Cog):
         roles = member.roles 
         mention_roles = ', '.join([role.mention for role in roles]) 
         top_role = member.top_role.mention 
-        embed = disnake.Embed(title=f'User {member.name}', color=0x7788ff)
+        embed = disnake.Embed(title=f'User {member.name}', color=0xCD853F)
         embed.set_thumbnail(url=member.avatar.url)
         embed.add_field(name='ID', value=member.id, inline=True)
         embed.add_field(name='Nickname', value=member.nick or member.name, inline=True)
@@ -67,7 +67,7 @@ class user(commands.Cog):
 💎Мы надеемся, что наш бот будет полезен вам. Если у вас есть вопросы или предложения по улучшению нашего бота, пожалуйста, свяжитесь с нами.💎
         '''
     
-        embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0x7788ff)
+        embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0xCD853F)
         embed.add_field(name="Polina bot 2023 © Все права защищены",value='',inline=False)
     
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -78,7 +78,7 @@ class user(commands.Cog):
     async def calc(self, inter, example: str):
             example_calc = example.replace("^", "**")
             example_text = example.replace("**", "^")
-            await inter.response.send_message(embed=disnake.Embed(title='Калькулятор', description=f"{example_text} = {eval(example_calc)}", color=0x7788ff), ephemeral=True)
+            await inter.response.send_message(embed=disnake.Embed(title='Калькулятор', description=f"{example_text} = {eval(example_calc)}", color=0xCD853F), ephemeral=True)
 
 
 
@@ -89,7 +89,7 @@ class user(commands.Cog):
             list(range(-3, 5)) + list(range(5, 10)) * 4 + list(range(10, 15)) * 6 + list(range(15, 20)) * 2 + list(range(20, 30))
         )
         height = random.choice(result1)
-        embed = disnake.Embed(description=f"@{ctx.author.display_name}, длина твоего члена - {height} см", color=0x7788ff)
+        embed = disnake.Embed(description=f"@{ctx.author.display_name}, длина твоего члена - {height} см", color=0xCD853F)
         await ctx.response.send_message(embed=embed, ephemeral=True)
         random.seed()
 
@@ -99,7 +99,7 @@ class user(commands.Cog):
         if not user:
             user = ctx.author
         avatar_url = user.avatar.url
-        embed = disnake.Embed(title=f"Аватар {user.display_name} :frame_photo:", color=0x7788ff)
+        embed = disnake.Embed(title=f"Аватар {user.display_name} :frame_photo:", color=0xCD853F)
         embed.set_image(url=avatar_url)
         await ctx.send(embed=embed, ephemeral=True)
 
@@ -111,7 +111,7 @@ class user(commands.Cog):
         mention_roles = ', '.join([role.mention for role in guild.roles])
         top_role = guild.roles[-1].mention
 
-        embed = disnake.Embed(title=f"Информация о сервере {guild.name} :desktop:", color=0x7788ff)
+        embed = disnake.Embed(title=f"Информация о сервере {guild.name} :desktop:", color=0xCD853F)
         embed.set_thumbnail(url=guild.icon.url)
         embed.add_field(name="ID :id:", value=guild.id, inline=True)
         embed.add_field(name="Создан :date:", value=guild.created_at.strftime("%d.%m.%Y %H:%M:%S"), inline=True)
@@ -134,7 +134,7 @@ class user(commands.Cog):
         response = requests.get(f"https://tinyurl.com/api-create.php?url={url}")
         embed = disnake.Embed(title="Сокращенный URL-адрес",
                               description=f"Ваш сокращенный URL-адрес: {response.text}",
-                              color=0x7788ff)
+                              color=0xCD853F)
         embed.set_footer(text='Polina bot | ©2023', icon_url=ctx.author.avatar.url)
         await ctx.response.send_message(embed=embed, ephemeral=True)
 
@@ -148,7 +148,7 @@ class user(commands.Cog):
         uptime = datetime.utcnow() - bot.user.created_at.replace(tzinfo=None)
         uptime_str = f"{uptime.days} дней {uptime.seconds // 3600} часа {(uptime.seconds // 60) % 60} минуты {uptime.seconds % 60} секунды"
 
-        embed = disnake.Embed(title="Pong! :ping_pong:", color=0x7788ff)
+        embed = disnake.Embed(title="Pong! :ping_pong:", color=0xCD853F)
         embed.add_field(name="Работаю 🕒", value=uptime_str + "\n", inline=False)
         embed.add_field(name="Задержка 🚀", value=f"{round(bot.latency * 1000)} мс\n", inline=False)
         embed.add_field(name="Задержка хостинга 🌐", value=f"{round(bot.ws.latency * 1000)} мс\n", inline=False)
@@ -162,7 +162,7 @@ class user(commands.Cog):
         alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         
         link = ''.join(random.choices(alphabet, k=16))
-        embed = disnake.Embed(title="Discord Nitro", description=f"https://discord.gift/{link}", color=0x7788ff)
+        embed = disnake.Embed(title="Discord Nitro", description=f"https://discord.gift/{link}", color=0xCD853F)
         await ctx.send(embed=embed, ephemeral=True)
         
 

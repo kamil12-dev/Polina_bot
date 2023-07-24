@@ -39,7 +39,7 @@ class economy(commands.Cog):
                 new_balance = balance + random.randint(50, 150)
                 c.execute('UPDATE economy SET balance = ?, last_daily = ? WHERE user_id = ?', (new_balance, int(datetime.utcnow().timestamp()), user_id))
                 conn.commit()
-                embed=disnake.Embed(color=0x7788ff)
+                embed=disnake.Embed(color=0xCD853F)
                 embed.add_field(name="Poli-coins", value="Ежедневный бонус", inline=False)
                 embed.add_field(name="Ты получил", value=f"{new_balance - balance} Poli-coins", inline=True)
                 await ctx.send(embed=embed, ephemeral=True)
@@ -55,12 +55,12 @@ class economy(commands.Cog):
         if not row:
             c.execute('INSERT INTO economy (user_id, username, balance, last_daily) VALUES (?, ?, 0, 0)', (user_id, ctx.author.name))
             conn.commit()
-            embed = disnake.Embed(color=0x7788ff)
+            embed = disnake.Embed(color=0xCD853F)
             embed.add_field(name="Ваш баланс", value="На вашем счету: 0", inline=True)
             await ctx.send(embed=embed, ephemeral=True)
         else:
             balance = row[0]
-            embed = disnake.Embed(color=0x7788ff)
+            embed = disnake.Embed(color=0xCD853F)
             embed.add_field(name="Ваш баланс", value=f"На вашем счету: {balance}", inline=True)
             await ctx.send(embed=embed, ephemeral=True) 
 
@@ -88,7 +88,7 @@ class economy(commands.Cog):
             c.execute('UPDATE economy SET balance = balance + ? WHERE user_id = ?', (winnings, user_id))
             conn.commit()
             message = f"{ctx.author.mention}, Вы выиграли {winnings} Poli-coins! Результат: {result}."
-            color = 0x7788ff  
+            color = 0xCD853F  
         else:
             c.execute('UPDATE economy SET balance = balance - ? WHERE user_id = ?', (bet, user_id))
             conn.commit()
@@ -129,6 +129,8 @@ class economy(commands.Cog):
         embed = disnake.Embed(title='Dice', description=message, color=disnake.Color.green() if roll > 3 else disnake.Color.red())
         embed.add_field(name='Ваш баланс', value=f'{balance} Poli-coins', inline=False)
         await ctx.send(embed=embed, ephemeral=True)
+
+
 
 
 
