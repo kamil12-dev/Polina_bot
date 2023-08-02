@@ -48,14 +48,16 @@ class events(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_slash_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             embed = disnake.Embed(
                 title="Ошибка доступа",
                 description="Эта команда доступна только для администраторов.",
                 color=0xCD853F
             )
-            await ctx.send(embed=embed, ephemeral=True)
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+
+
 
 
 

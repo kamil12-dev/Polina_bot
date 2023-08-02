@@ -3,8 +3,6 @@ from disnake.ext import commands
 from random import randint, random
 from disnake import Option
 import sqlite3
-import os 
-import sys
 from datetime import datetime
 
 
@@ -46,15 +44,16 @@ class admins(commands.Cog):
 
 
     @commands.slash_command(name='clear', description='Очистить чат')
-    async def clear(self, ctx: disnake.ApplicationCommandInteraction, amount: int):
+    async def clear(self, ctx, amount: int):
         if not ctx.author.guild_permissions.manage_messages:
-            await ctx.send('Эта команда доступна только для администраторов.')
-            return
+            raise commands.CheckFailure
+
         if amount > 1000:
             await ctx.send('Кискис нельзя удалить больше 1000 сообщений за раз.')
             return
+
         deleted = await ctx.channel.purge(limit=amount)
-        embed=disnake.Embed(color=0xCD853F)
+        embed = disnake.Embed(color=0xCD853F)
         embed.add_field(name="Очистила чат", value=f"Удалила {len(deleted)} сообщений 😊", inline=False)
         await ctx.send(embed=embed, ephemeral=True)
 
@@ -204,28 +203,6 @@ class admins(commands.Cog):
         await ctx.send(embed=embed, ephemeral=True)
 
 
-
-
-
-    @commands.slash_command(name='restart', description='Перезапустить бота')
-    @commands.has_permissions(administrator=True)
-    async def restart(ctx: disnake.ApplicationCommandInteraction):
-        await ctx.response.defer()
-
-        try:
-            os.execv(sys.executable, ['python'] + [arg for arg in sys.argv if arg != '--handle-sls'])
-        except Exception as e:
-            embed = disnake.Embed(title='Ошибка при перезапуске бота', color=0xCD853F)
-            await ctx.send(embed=embed, ephemeral=True)
-        else:
-            embed = disnake.Embed(title='Бот перезапущен успешно', color=0xCD853F)
-            await ctx.send(embed=embed, ephemeral=True)
-
-            
-        
-
-
-
     @commands.slash_command(name='create_role', description='Создание новой роли')
     @commands.has_permissions(administrator=True)
     async def create_role(ctx, name: str):
@@ -332,6 +309,11 @@ class admins(commands.Cog):
                                       description=f"Успешно отправил участнику {member.mention}",
                                       color=0xCD853F)
         await ctx.send(embed=success_embed, ephemeral=True)
+
+
+
+
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(admins(bot))
