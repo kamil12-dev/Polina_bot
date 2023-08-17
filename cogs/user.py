@@ -6,35 +6,13 @@ import typing
 import requests
 import random
 from datetime import datetime
+import qrcode
 
 
 
 class user(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
-
-
-
-    @commands.slash_command(name='profile', description='Узнать свою статистику')
-    async def profile(ctx, member:disnake.Member):
-        created_at = member.created_at 
-        joined_at = str(member.joined_at).split()[0].replace('-', '.') 
-        roles = member.roles 
-        mention_roles = ', '.join([role.mention for role in roles]) 
-        top_role = member.top_role.mention 
-        embed = disnake.Embed(title=f'User {member.name}', color=0xCD853F)
-        embed.set_thumbnail(url=member.avatar.url)
-        embed.add_field(name='ID', value=member.id, inline=True)
-        embed.add_field(name='Nickname', value=member.nick or member.name, inline=True)
-        embed.add_field(name='Created at', value=created_at, inline=True)
-        embed.add_field(name='Присоединился', value=joined_at, inline=True)
-        embed.add_field(name='Roles', value=mention_roles, inline=True)
-        embed.add_field(name='Top role', value=top_role, inline=True)
-        embed.add_field(name='Bot', value=member.bot, inline=True)
-        embed.set_footer(text='Polina bot | © 2023', icon_url=ctx.author.avatar.url) 
-        await ctx.send(embed=embed, ephemeral=True) 
-
-
 
 
     @commands.slash_command(name="user_agreement", description="Пользовательское соглашение")
@@ -165,6 +143,72 @@ class user(commands.Cog):
         embed = disnake.Embed(title="Discord Nitro", description=f"https://discord.gift/{link}", color=0xCD853F)
         await ctx.send(embed=embed, ephemeral=True)
         
+
+
+
+    @commands.slash_command(name='8ball', description= 'Задать вопрос магическому шару.')
+    async def eight_ball(self, ctx, *, question: str):
+        responses = [
+            "Бесспорно",
+            "Предрешено",
+            "Никаких сомнений",
+            "Определённо да",
+            "Можешь быть уверен в этом",
+            "Мне кажется — «да»",
+            "Вероятнее всего",
+            "Хорошие перспективы",
+            "Знаки говорят — «да»",
+            "Да",
+            "Пока не ясно, попробуй снова",
+            "Спроси позже",
+            "Лучше не рассказывать",
+            "Сейчас нельзя предсказать",
+            "Сконцентрируйся и спроси опять",
+            "Даже не думай",
+            "Мой ответ — «нет»",
+            "По моим данным — «нет»",
+            "Перспективы не очень хорошие",
+            "Весьма сомнительно"
+        ]
+        response = random.choice(responses)
+        embed = disnake.Embed(title="Магический шар 🎱", description=f"Вопрос: {question}\nОтвет: {response}", color=0xCD853F)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+
+    @commands.slash_command(name='reverse', description='Отзеркалить текст.')
+    async def reverse_text(self, ctx, *, текст: str):
+        reversed_text = текст[::-1]
+        emoji = "🔁"  
+        embed = disnake.Embed(title=f"{emoji} Отзеркаленный текст", description=reversed_text, color=0xCD853F)
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+
+
+    @commands.slash_command(name="qrcode", description="Генерировать QR-код.")
+    async def generate_qr(self, ctx, link: str):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(link)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+
+        with open("qrcode.png", "wb") as img_file:
+            qr_img.save(img_file)
+
+        embed = disnake.Embed(title="QR-код", color=0xCD853F)
+        embed.set_image(url="attachment://qrcode.png")
+
+        await ctx.send(file=disnake.File("qrcode.png", filename="qrcode.png"), embed=embed, ephemeral=True)
+
+
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(user(bot))

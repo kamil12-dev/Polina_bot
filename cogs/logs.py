@@ -11,16 +11,26 @@ class Logs(commands.Cog):
         for guild in self.bot.guilds:
             overwrites = {
                 guild.default_role: disnake.PermissionOverwrite(read_messages=False),
-                guild.me: disnake.PermissionOverwrite(read_messages=True, read_message_history=True)
+                guild.me: disnake.PermissionOverwrite(read_messages=True, read_message_history=True, mention_everyone=False)
             }
-
+            
             category = disnake.utils.get(guild.categories, name="Логи")
             if not category:
                 category = await guild.create_category("Логи")
-
             admin_channel = disnake.utils.get(category.text_channels, name="admin-logs")
             if not admin_channel:
                 admin_channel = await category.create_text_channel("admin-logs", overwrites=overwrites)
+            
+            bot_member = guild.get_member(self.bot.user.id)
+            await admin_channel.set_permissions(bot_member, overwrite=disnake.PermissionOverwrite(send_messages=True, read_messages=True, mention_everyone=False))
+
+
+
+            
+            
+
+
+
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -75,22 +85,6 @@ class Logs(commands.Cog):
             if channel:
                 embed = disnake.Embed(description=f"📷 Пользователь {after.mention} изменил аватарку.", color=0xCD853F)
                 await channel.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_message_delete(self, message):
-        if message.guild:
-            channel = disnake.utils.get(message.guild.text_channels, name="admin-logs")
-            if channel:
-                author = message.author
-                deleted_messages = await message.channel.purge(limit=100, before=message, check=lambda m: m.author == author)
-                deleted_messages_content = "\n".join([f"{m.content} ({m.created_at})" for m in deleted_messages])
-                embed = disnake.Embed(description=f"🗑️ Пользователь {message.author.mention} удалил сообщение:\n{message.content}\n\n📄 Количество удаленных сообщений: {len(deleted_messages)}\n\n📝 Удаленные сообщения:\n{deleted_messages_content}", color=0xCD853F)
-                await channel.send(embed=embed)
-
-                log_channel = disnake.utils.get(message.guild.text_channels, name="admin-logs")
-                if log_channel:
-                    embed = disnake.Embed(description=f"🗑️ Пользователь {message.author.mention} удалил сообщение:\n{message.content}\n\n📄 Количество удаленных сообщений: {len(deleted_messages)}", color=0xCD853F)
-                    await log_channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -159,6 +153,77 @@ class Logs(commands.Cog):
             if log_channel:
                 embed = disnake.Embed(description=f"❗ Пользователь {before.guild.me.mention} изменил тип канала: Голосовой {before.mention} -> Текстовый {after.mention}", color=0xCD853F)
                 await log_channel.send(embed=embed)
+
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if before.author.bot:
+            return
+
+        if before.content != after.content:
+            channel = disnake.utils.get(before.guild.text_channels, name="admin-logs")
+            if channel:
+                executor = before.guild.me.mention
+                author = before.author
+                embed = disnake.Embed(description=f"📝 Пользователь {author.mention} изменил своё сообщение:\n"
+                                                  f"До: {before.content}\nПосле: {after.content}\n👤 Выполнил: {executor}", color=0xCD853F)
+                await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        if message.author.bot:
+            return
+
+        channel = disnake.utils.get(message.guild.text_channels, name="admin-logs")
+        if channel:
+            executor = message.guild.me.mention
+            author = message.author
+            embed = disnake.Embed(description=f"🗑️ Пользователь {author.mention} удалил своё сообщение:\n{message.content}\n👤 Выполнил: {executor}", color=0xCD853F)
+            await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_bulk_message_delete(self, messages):
+        for message in messages:
+            if message.author.bot:
+                continue
+
+            channel = disnake.utils.get(message.guild.text_channels, name="admin-logs")
+            if channel:
+                executor = message.guild.me.mention
+                author = message.author
+                embed = disnake.Embed(description=f"🗑️ Пользователь {author.mention} удалил несколько сообщений.", color=0xCD853F)
+                await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_message_bulk_delete(self, messages):
+        for message in messages:
+            if message.author.bot:
+                continue
+
+            channel = disnake.utils.get(message.guild.text_channels, name="admin-logs")
+            if channel:
+                executor = message.guild.me.mention
+                author = message.author
+                embed = disnake.Embed(description=f"🗑️ Пользователь {author.mention} удалил несколько сообщений.", color=0xCD853F)
+                await channel.send(embed=embed)
+
+
+    @commands.Cog.listener()
+    async def on_member_move(self, member, before, after):
+        channel = disnake.utils.get(member.guild.text_channels, name="admin-logs")
+        if channel:
+            embed = disnake.Embed(description=f"🚶 Пользователь {member.mention} переместился из канала {before.channel.name} в канал {after.channel.name}.", color=0xCD853F)
+            await channel.send(embed=embed)
+
+
+
+    @commands.Cog.listener()
+    async def on_member_move(self, member, before, after):
+        channel = disnake.utils.get(member.guild.text_channels, name="admin-logs")
+        if channel:
+            embed = disnake.Embed(description=f"🚶 Пользователь {member.mention} переместился из канала {before.channel.name} в канал {after.channel.name}.", color=0xCD853F)
+            await channel.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Logs(bot))

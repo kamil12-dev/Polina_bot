@@ -106,15 +106,19 @@ class admins(commands.Cog):
         await ctx.send(embed=embed, ephemeral=True)
 
 
-    
+
     @commands.slash_command(name="message_bot", description="Отправить сообщение от имени Полины.")
     @commands.has_permissions(administrator=True)
-    async def echo(self, ctx: disnake.ApplicationCommandInteraction, channel: disnake.TextChannel, *, message: str):
+    async def echo(self, ctx: disnake.ApplicationCommandInteraction, channel: disnake.TextChannel, role: disnake.Role, *, message: str):
         message = message.replace("-", "\n")
-        embed=disnake.Embed(color=0xCD853F)
+        embed = disnake.Embed(color=0xCD853F)
         embed.add_field(name="", value=message, inline=False)
-        await channel.send(embed=embed) 
 
+        role_mention = role.mention
+
+        message_with_role = f"{role_mention}"
+
+        await channel.send(embed=embed, content=message_with_role)
 
 
 
@@ -209,34 +213,32 @@ class admins(commands.Cog):
         guild = ctx.guild
         role = await guild.create_role(name=name)
         embed = disnake.Embed(
-            title=f'Роль создана',
+            title='Роль создана',
             description=f'Новая роль {role.mention} была создана!',
             color=0xCD853F
         )
         await ctx.send(embed=embed, ephemeral=True)
 
 
-
     @commands.slash_command(name='assign_role', description='Выдача роли пользователю')
     @commands.has_permissions(administrator=True)
     async def assign_role(ctx, role: disnake.Role, member: disnake.Member):
         await member.add_roles(role)
-        embed = disnake.embeds.Embed(
+        embed = disnake.Embed(
             title='Роль добавлена',
-            description=f'Кисуне {member.mention} была выдана роль {role.mention}!',
+            description=f'Пользователю {member.mention} была выдана роль {role.mention}!',
             color=0xCD853F
         )
         await ctx.send(embed=embed, ephemeral=True)
-
 
 
     @commands.slash_command(name='remove_role', description='Удаление роли у пользователя')
     @commands.has_permissions(administrator=True)
     async def remove_role(ctx, role: disnake.Role, member: disnake.Member):
         await member.remove_roles(role)
-        embed = disnake.embeds.Embed(
+        embed = disnake.Embed(
             title='Роль удалена',
-            description=f'У кисуни {member.mention} была удалена роль {role.mention}!',
+            description=f'У пользователя {member.mention} была удалена роль {role.mention}!',
             color=0xCD853F
         )
         await ctx.send(embed=embed, ephemeral=True)
@@ -310,10 +312,6 @@ class admins(commands.Cog):
                                       color=0xCD853F)
         await ctx.send(embed=success_embed, ephemeral=True)
 
-
-
-
-
-
+        
 def setup(bot: commands.Bot):
     bot.add_cog(admins(bot))

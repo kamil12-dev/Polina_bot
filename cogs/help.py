@@ -24,11 +24,12 @@ class design_help_cmd(disnake.ui.View):
 class help_cmd(disnake.ui.Select):
     def __init__(self):
         options = [
+            disnake.SelectOption(label='Developers', description='Команды для разработчиков ботов.', emoji='👨‍💻'),
             disnake.SelectOption(label='Развлечения', description='Куча весёлостей и развлечений!', emoji='<:fun:1004671040116490300>'),
             disnake.SelectOption(label='Модерация', description='Команды для модераторов / Администрации.', emoji='<:moderator:1004670538758754445>'),
-            disnake.SelectOption(label='Глобальный чат', description='Общение с разнами серверами через бота.', emoji='<:chat:992097506748010656>'),
+            disnake.SelectOption(label='Level', description='Общение с разнами серверами через бота.', emoji='<:chat:992097506748010656>'),
             disnake.SelectOption(label='Общее', description='Общие команды для обычных юзеров.', emoji='<:all:1004659237336657972>'),
-            disnake.SelectOption(label='Животные', description='Изображение животных.', emoji='<:animals:1004669831217422417>'),
+            disnake.SelectOption(label='Животные', description='Животные', emoji='<:animals:1004669831217422417>'),
             disnake.SelectOption(label='NSFW', description='18+ изображение', emoji='<:18:1004669364705955852>'),
             disnake.SelectOption(label='Информация', description='Полезные команды', emoji='<:info:992096997500780574>'),
             disnake.SelectOption(label='Premium', description='Покупка подписки', emoji='💲'),
@@ -42,6 +43,7 @@ class help_cmd(disnake.ui.Select):
             embed.add_field(name='Развлечения', value=(
                 '`/gay` > в разработке...\n'
                 '`/chill` > Узнать размер члена! 😌\n'
+                '`/8ball` > Задать вопрос магическому шару. 🎱\n'
             ))
             await interaction.response.edit_message(embed=embed)
         if "Модерация" in self.values:
@@ -70,18 +72,26 @@ class help_cmd(disnake.ui.Select):
                 '`/mchatinfo` > Показать список пользователей в муте 📋\n'
             ))
             await interaction.response.edit_message(embed=embed)
-        if "Глобальный чат" in self.values:
+        if "Level" in self.values:
             embed = disnake.Embed(color=disnake.Color.purple())
             embed.add_field(name='Общее', value=(
-                '`/global` > в разработке...\n'
+                '`/reset` > Сбросить уровни и опыт всех пользователей \n'
+                '`/setlevel` > Установить уровень пользователю \n'
+                '`/addxp` > Добавить опыт пользователю \n'
+            ))
+            await interaction.response.edit_message(embed=embed)
+        if "Developers" in self.values:
+            embed = disnake.Embed(color=disnake.Color.purple())
+            embed.add_field(name='Общее', value=(
+                '`/restart` > For developers | Выполняет полную перезагрузку бота.\n'
+                '`/status` > For developers | Информация о статусе бота.\n'
+                '`/...` > в разработке...\n'
             ))
             await interaction.response.edit_message(embed=embed)
         if "Общее" in self.values:
             embed = disnake.Embed(color=disnake.Color.blue())
             embed.add_field(name='Общее', value=(
                 '`/help` > Посмотреть все команды 👀\n'
-                '`/daily` > Получить ежедневные Poli-coins 💰\n'
-                '`/balance` > Показать баланс 💵\n'
                 '`/dice` > Играть в Dice 🎲\n'
                 '`/user_agreement` > Пользовательское соглашение 📜\n'
                 '`/profile` > Узнать свою статистику 📊\n'
@@ -92,8 +102,9 @@ class help_cmd(disnake.ui.Select):
                 '`/server` > Просмотр информации о сервере 🖥️\n'
                 '`/ping` > Проверка бота на работу 🏓\n'
                 '`/nitro` > Генерирует Discord Nitro 🎁\n'
-                '`/chat` > Спросить у ChatGPT 🤔\n'
                 '`/ticket` > Создать тикет для связи с администрацией 📲\n'
+                '`/reverse` > Отзеркалить текст. 🔁\n'
+                '`/qrcode` > Генерировать QR-код.. \n'
             ))
             await interaction.response.edit_message(embed=embed)
         if "Животные" in self.values:
@@ -133,10 +144,12 @@ class help_cmd(disnake.ui.Select):
                 '`/balance` > Показать баланс 💵\n'
                 '`/daily` > Получить ежедневные Poli-coins 💰\n'
                 '`/dice` > Играть в Dice 🎲\n'
-                '`/buy` > Купить предмет из магазина (в разработке...) 🛍️\n'
-                '`/sell` > Продать предмет из инвентаря (в разработке...)💸\n'
-                '`/inventory` > Показать инвентарь (в разработке...)🎒\n'
-                '`/leaderboard` > Показать топ пользователей по балансу(в разработке...) 🏆\n'
+                '`/miner` > Работа шахтёра ⛏️ \n'
+                '`/prostitute` > Работа проституткой 👠 \n'
+                '`/programmer` > Работа программистом 💻\n'
+                '`/transfer` > Перевести Poli-coins другому пользователю \n'
+                '`/setbalance` > Установить баланс пользователя \n'
+                '`/leaderboard` > Показать топ пользователей по балансу 🏆\n'
             ))
             await interaction.response.edit_message(embed=embed)
 

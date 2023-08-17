@@ -47,26 +47,6 @@ class events(commands.Cog):
 
 
 
-    @commands.Cog.listener()
-    async def on_slash_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            embed = disnake.Embed(
-                title="Ошибка доступа",
-                description="Эта команда доступна только для администраторов.",
-                color=0xCD853F
-            )
-            await ctx.response.send_message(embed=embed, ephemeral=True)
-
-
-
-
-
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandNotFound):
-            await ctx.send(embed=disnake.Embed(description=f'** {ctx.author.name}, Данной команды нет, но скоро будет.**', color=0xCD853F))
-
-
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
