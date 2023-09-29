@@ -28,8 +28,13 @@ class admins(commands.Cog):
 
 
     @commands.slash_command(name="kick", description="Выгнать пользователя с сервера.")
-    @commands.has_permissions(kick_members=True, administrator=True)
+    @commands.has_permissions(kick_members=True)
     async def kick_user(self, ctx: disnake.ApplicationCommandInteraction, user: disnake.Member, reason: str = None):
+
+        if user.top_role >= ctx.author.top_role:
+            await ctx.send("Вы не можете кикнуть пользователя с более высокой или равной ролью.")
+            return
+
         await user.kick(reason=reason)
         try:
             await user.send(f"Вы были кикнуты с сервера {ctx.guild.name}. Причина: {reason}")
@@ -38,7 +43,7 @@ class admins(commands.Cog):
         embed = disnake.Embed(color=0xCD853F)
         embed.add_field(name="Kick", value=f"{ctx.author.mention} кикнула {user.mention} из {ctx.guild} сервера 😔")
         embed.add_field(name="Причина", value=reason if reason else "Не указана")
-        
+
         await ctx.send(embed=embed, ephemeral=True)
 
 
@@ -60,12 +65,13 @@ class admins(commands.Cog):
 
     
     @commands.slash_command(name="ban", description="Забанить пользователя.")
-    @commands.has_permissions(ban_members=True, administrator=True)
-    async def ban_user(self, ctx: disnake.ApplicationCommandInteraction, user: disnake.Member, reason: str = None):
+    @commands.has_permissions(ban_members=True)
+    async def ban_user(self, ctx, user: disnake.Member, reason: str = None):
         conn = sqlite3.connect('bans.db')
         c = conn.cursor()
         c.execute("SELECT user_id FROM bans WHERE user_id=?", (user.id,))
-        banned_user = c.fetchone()  
+        banned_user = c.fetchone()
+
         if banned_user:
             embed = disnake.Embed(title="Бан", description=f"{user.mention} Этот пользователь уже забанен.", color=0xCD853F)
         else:
@@ -76,15 +82,17 @@ class admins(commands.Cog):
             try:
                 await user.send(embed=embed)
             except disnake.errors.HTTPException:
-                pass       
-        await ctx.send(embed=embed, ephemeral=True) 
+                pass
+
+        await ctx.send(embed=embed, ephemeral=True)
 
 
     @commands.slash_command(name="unban", description="Разбанить пользователя.")
-    @commands.has_permissions(ban_members=True, administrator=True)
-    async def unban_user(self, ctx: disnake.ApplicationCommandInteraction, user: disnake.User, reason: str = None):
+    @commands.has_permissions(ban_members=True)
+    async def unban_user(self, ctx, user: disnake.User, reason: str = None):
         banned_users = await ctx.guild.bans()
         user_name, user_discriminator = user.name, user.discriminator
+
         for banned_entry in banned_users:
             banned_user = banned_entry.user
             if (banned_user.name, banned_user.discriminator) == (user_name, user_discriminator):
@@ -101,9 +109,6 @@ class admins(commands.Cog):
                 
                 await ctx.send(embed=embed, ephemeral=True)
                 return
-        
-        embed = disnake.Embed(title="Ошибка", description=f"Пользователь {user.mention} не был найден в списке забаненных.", color=0xff0000)
-        await ctx.send(embed=embed, ephemeral=True)
 
 
 

@@ -3,12 +3,11 @@ import sqlite3
 import datetime
 from disnake.ext import commands
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 conn = sqlite3.connect('bans.db')
 c = conn.cursor()
-
 
 
 
@@ -57,7 +56,6 @@ class economy(commands.Cog):
                 await ctx.send(embed=embed, ephemeral=True)
 
 
-
     @commands.slash_command(name="balance", description="Показать баланс.")
     async def balance(ctx: disnake.ApplicationCommandInteraction):
         user_id = ctx.author.id
@@ -75,7 +73,6 @@ class economy(commands.Cog):
             embed = disnake.Embed(color=0xCD853F)
             embed.add_field(name="Ваш баланс", value=f"На вашем счету: {balance}", inline=True)
             await ctx.send(embed=embed, ephemeral=True) 
-
 
 
     @commands.slash_command(name="game", description="Играть в 'Орел и решка'.")
@@ -110,7 +107,6 @@ class economy(commands.Cog):
         embed = disnake.Embed(color=color)
         embed.add_field(name="Орёл и решка", value=message, inline=False)
         await ctx.send(embed=embed, ephemeral=True)      
-
 
 
     @commands.slash_command(name='dice', description='Игра в Dice')

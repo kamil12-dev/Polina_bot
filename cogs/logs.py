@@ -25,13 +25,6 @@ class Logs(commands.Cog):
             await admin_channel.set_permissions(bot_member, overwrite=disnake.PermissionOverwrite(send_messages=True, read_messages=True, mention_everyone=False))
 
 
-
-            
-            
-
-
-
-
     @commands.Cog.listener()
     async def on_member_join(self, member):
         channel = disnake.utils.get(member.guild.text_channels, name="admin-logs")
