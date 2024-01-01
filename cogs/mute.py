@@ -42,7 +42,7 @@ class mute(commands.Cog):
         embed.add_field(name="Длительность", value=f"{duration} минут", inline=True)
         embed.add_field(name="Причина", value=reason, inline=True)
         embed.set_footer(text=f"Размут через: {duration} минут ⏰")
-        embed.set_footer(text="Polina bot © 2023 Все права защищены")
+        embed.set_footer(text="Polina bot © 2024 Все права защищены")
         
         await ctx.send(embed=embed, ephemeral=True)
 
@@ -62,7 +62,7 @@ class mute(commands.Cog):
             embed = disnake.Embed(title="Размут", color=0xCD853F)
             embed.add_field(name="Пользователь", value=member.mention, inline=True)
             embed.set_footer(text="Был размучен 🎉")
-            embed.set_footer(text="Polina bot © 2023 Все права защищены")
+            embed.set_footer(text="Polina bot © 2024 Все права защищены")
             
             await ctx.send(embed=embed, ephemeral=True)
 
@@ -104,7 +104,7 @@ class mute(commands.Cog):
             embed.add_field(name="Дата и время размута", value=unmute_datetime.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
             embed.add_field(name="Администратор", value=admin.name, inline=True)
             embed.set_footer(text="Вы будете размучены автоматически. 🕒")
-            embed.set_footer(text="Polina bot © 2023 Все права защищены")
+            embed.set_footer(text="Polina bot © 2024 Все права защищены")
             await dm_channel.send(embed=embed)
         except Exception as e:
             print(f"Ошибка при отправке сообщения размута пользователю {member}: {e}")
@@ -115,7 +115,7 @@ class mute(commands.Cog):
             embed = disnake.Embed(title="Вы размучены 🎉", color=0xCD853F)
             embed.add_field(name="Сервер", value=member.guild.name, inline=True)
             embed.set_footer(text="Вы размучены 🎉")
-            embed.set_footer(text="Polina bot © 2023 Все права защищены")
+            embed.set_footer(text="Polina bot © 2024 Все права защищены")
             await dm_channel.send(embed=embed)
         except Exception as e:
             print(f"Ошибка при отправке сообщения размута пользователю {member}: {e}")

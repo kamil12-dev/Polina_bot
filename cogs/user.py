@@ -46,7 +46,7 @@ class user(commands.Cog):
         '''
     
         embed = disnake.Embed(title="Пользовательское соглашение", description=f"```{message}```", color=0xCD853F)
-        embed.add_field(name="Polina bot 2023 © Все права защищены",value='',inline=False)
+        embed.add_field(name="Polina bot 2024 © Все права защищены",value='',inline=False)
     
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
@@ -101,7 +101,7 @@ class user(commands.Cog):
                                                           f"Голосовые: {len(guild.voice_channels)}", inline=True)
         embed.add_field(name='Роли', value=mention_roles, inline=True)
         
-        embed.set_footer(text='Polina bot | ©2023', icon_url=ctx.author.avatar.url) 
+        embed.set_footer(text='Polina bot | ©2024', icon_url=ctx.author.avatar.url) 
 
         await ctx.send(embed=embed, ephemeral=True)
 
@@ -113,7 +113,7 @@ class user(commands.Cog):
         embed = disnake.Embed(title="Сокращенный URL-адрес",
                               description=f"Ваш сокращенный URL-адрес: {response.text}",
                               color=0xCD853F)
-        embed.set_footer(text='Polina bot | ©2023', icon_url=ctx.author.avatar.url)
+        embed.set_footer(text='Polina bot | ©2024', icon_url=ctx.author.avatar.url)
         await ctx.response.send_message(embed=embed, ephemeral=True)
 
 

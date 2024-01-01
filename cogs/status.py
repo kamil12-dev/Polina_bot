@@ -28,7 +28,7 @@ class status(commands.Cog):
 - Logs: [75% {now}]\n```
             """
         )
-        e.set_footer(text='Polina bot | © 2023 Все права защищены', icon_url=self.client.user.avatar)
+        e.set_footer(text='Polina bot | © 2024 Все права защищены', icon_url=self.client.user.avatar)
         await inter.response.send_message(embed=e, ephemeral=True)
 
 def setup(client: commands.Bot):

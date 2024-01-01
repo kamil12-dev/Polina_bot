@@ -111,7 +111,7 @@ class level(commands.Cog):
         embed.add_field(name="Уровень", value=f":medal: `{level}`", inline=True)
         embed.add_field(name="\u200b", value="\u200b", inline=True) 
         embed.add_field(name="Опыт", value=f":bar_chart: `{xp}`/`{xp_needed}`", inline=True)
-        embed.set_footer(text="Polina bot © 2023 Все права защищены")
+        embed.set_footer(text="Polina bot © 2024 Все права защищены")
         await ctx.send(embed=embed, ephemeral=True)
 
 

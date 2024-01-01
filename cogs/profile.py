@@ -34,7 +34,7 @@ class profile(commands.Cog):
         embed.add_field(name='** Высшая роль **', value=верхняя_роль)
         embed.add_field(name='** Бот **', value=True if member.bot == True else False)
         embed.add_field(name='** Статус **', value=f'{member.status}')
-        embed.set_footer(text='Polina | 2023', icon_url=self.client.user.avatar)
+        embed.set_footer(text='Polina | 2024', icon_url=self.client.user.avatar)
         await inter.response.send_message(embed=embed)
 
 

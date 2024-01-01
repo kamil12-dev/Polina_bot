@@ -20,7 +20,7 @@ class infobots(commands.Cog):
         info.add_field(name = "📊 Кол-во гильдий:", value = f"{len(self.bot.guilds)}")
         info.add_field(name = ":busts_in_silhouette: Пользователей:", value = f"{len(self.bot.users)}", inline=False)
         info.add_field(name=":ping_pong: Ping:", value=f"{round(self.bot.latency * 1000)}ms")
-        info.set_footer(text="Polina bot © 2023 Все права защищены")
+        info.set_footer(text="Polina bot © 2024 Все права защищены")
         await ctx.send(embed=info, ephemeral=True)
 
 

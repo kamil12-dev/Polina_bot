@@ -22,7 +22,7 @@ class Restart(commands.Cog):
             color=0xCD853F
 
         )
-        embed.set_footer(text='Polina bot | © 2023 Все права защищены', icon_url=self.client.user.avatar)
+        embed.set_footer(text='Polina bot | © 2024 Все права защищены', icon_url=self.client.user.avatar)
 
         await inter.response.send_message(embed=embed, ephemeral=True)
         restart()

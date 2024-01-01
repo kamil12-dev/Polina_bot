@@ -17,7 +17,7 @@ class nsfw(commands.Cog):
                 request = await session.get('https://api.waifu.pics/nsfw/waifu')
                 newjson = await request.json()
                 pat = disnake.Embed(title = f"{ctx.author.name} Вот это кайф!", color = 0x38f09a)
-            pat.set_footer(text="Polina bot © 2023 Все права защищены")
+            pat.set_footer(text="Polina bot © 2024 Все права защищены")
             pat.set_image(url=newjson['url'])
             await ctx.send(embed = pat)
 
@@ -30,7 +30,7 @@ class nsfw(commands.Cog):
                 request = await session.get('https://api.waifu.pics/nsfw/blowjob')
                 blowjobjson = await request.json()
                 blowjob = disnake.Embed(title = f"{ctx.author.name} Вот это кайф!", color = 0x38f09a)
-            blowjob.set_footer(text="Polina bot © 2023 Все права защищены")
+            blowjob.set_footer(text="Polina bot © 2024 Все права защищены")
             blowjob.set_image(url=blowjobjson['url'])
             await ctx.send(embed = blowjob)
 
@@ -43,7 +43,7 @@ class nsfw(commands.Cog):
                 request = await session.get('https://api.waifu.pics/nsfw/trap')
                 trapjson = await request.json()
                 trap = disnake.Embed(title = f"{ctx.author.name} Вот это кайф!", color = 0x38f09a)
-            trap.set_footer(text="Polina bot © 2023 Все права защищены")
+            trap.set_footer(text="Polina bot © 2024 Все права защищены")
             trap.set_image(url=trapjson['url'])
             await ctx.send(embed = trap)
 
@@ -55,7 +55,7 @@ class nsfw(commands.Cog):
                 request = await session.get('https://api.waifu.pics/nsfw/neko')
                 nekojson = await request.json()
                 neko = disnake.Embed(title = f"{ctx.author.name} Вот это кайф!", color = 0x38f09a)
-            neko.set_footer(text="Polina bot © 2023 Все права защищены")
+            neko.set_footer(text="Polina bot © 2024 Все права защищены")
             neko.set_image(url=nekojson['url'])
             await ctx.send(embed = neko)
 
